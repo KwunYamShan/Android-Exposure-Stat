@@ -1,0 +1,32 @@
+apply plugin: 'maven'
+
+def getRepositoryUsername() {
+    return hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : ""
+}
+
+def getRepositoryPassword() {
+    return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            repository(url: NEXUS_URL) {
+                authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                pom.groupId = GROUP_ID
+                pom.artifactId = ARTIFACT_ID
+                pom.version = VERSION
+            }
+            pom.whenConfigured { pom ->
+                pom.dependencies.forEach { dep ->
+                    if (dep.getVersion() == "unspecified") {
+                        println("--modify the dependenies module in pom.xml--->>" + dep.getArtifactId())
+                        dep.setGroupId(GROUP_ID)
+                        dep.setVersion(VERSION)
+                    }
+                }
+            }
+        }
+    }
+}
