@@ -3,7 +3,7 @@ package com.wh.statdemo;
 import android.app.Application;
 
 import com.wh.stat.HBHStatistical;
-import com.wh.stat.IContext;
+import com.wh.stat.lifecycle.IContext;
 
 public class App extends Application implements IContext {
     @Override

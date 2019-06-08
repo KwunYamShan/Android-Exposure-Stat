@@ -1,8 +1,11 @@
-package com.wh.stat;
+package com.wh.stat.lifecycle;
 
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+
+import com.wh.stat.HBHStatistical;
+import com.wh.stat.layout.LayoutManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class ActivityLifeCycle implements Application.ActivityLifecycleCallbacks
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         ++created;
+        if (activity != null){
+            LayoutManager.wrap(activity);
+        }
     }
 
     @Override
@@ -45,19 +51,17 @@ public class ActivityLifeCycle implements Application.ActivityLifecycleCallbacks
     @Override
     public void onActivityResumed(Activity activity) {
         ++resumed;
-        HBHStatistical.getInstance().wrap(activity);
+        HBHStatistical.getInstance().bind(activity);
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
         ++paused;
-
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
         ++stopped;
-
         if (activity != null) {
             for (WeakReference ref : refs) {
                 if (ref.get() == activity) {
