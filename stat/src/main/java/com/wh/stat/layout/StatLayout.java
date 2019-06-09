@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 import static com.wh.stat.HBHStatistical.TAG;
 
-public class StatLayout extends FrameLayout implements View.OnTouchListener {
+public class StatLayout extends FrameLayout  {
     public StatLayout(Context context) {
         super(context);
     }
@@ -36,18 +36,11 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
                 Iterator iterator = hitViews.iterator();
                 while (iterator.hasNext()) {
                     View view = (View) iterator.next();
-                    view.setOnTouchListener(this);
+                    //view.setOnTouchListener(this);
+                    HBHStatistical.getInstance().wrapTouch(view,event);
                 }
             }
         }
         return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            HBHStatistical.getInstance().delayed();
-        }
-        return false;
     }
 }

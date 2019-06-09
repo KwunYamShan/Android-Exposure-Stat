@@ -2,10 +2,12 @@ package com.wh.stat;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -14,6 +16,7 @@ import android.widget.AdapterView;
 import com.wh.stat.lifecycle.ActivityLifeCycle;
 import com.wh.stat.lifecycle.IContext;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -219,4 +222,152 @@ public class HBHStatistical {
             }
         }
     };
+    private Field mListenerInfoField;
+    private Field mOnTouchListenerField;
+    /**
+     * 通过反射获取mListenerInfo
+     * @param view
+     * @return
+     */
+    private Field getListenerInfoField(View view){
+        Field declaredField = null;
+        try {
+            // 通过反射拿到mListenerInfo，并且设置为可访问（用于后续替换点击事件）
+            Class viewClazz = Class.forName("android.view.View");
+            declaredField = viewClazz.getDeclaredField("mListenerInfo");
+            if (!declaredField.isAccessible()) {
+                declaredField.setAccessible(true);
+            }
+            mListenerInfoField = declaredField;
+            return declaredField;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return declaredField;
+    }
+    private Field getOnTouchListenerField(View view){
+        Field clickInfo = null;
+        try {
+            Object viewInfo = getListenerInfoField(view).get(view);
+            if (viewInfo != null){
+
+                clickInfo = viewInfo.getClass().getDeclaredField("mOnTouchListener");
+                if (!clickInfo.isAccessible()) {
+                    clickInfo.setAccessible(true);
+                }
+                mOnTouchListenerField = clickInfo;
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return clickInfo;
+    }
+    public void wrapTouch(View view , MotionEvent motionEvent){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            wrapOnTouch(view,motionEvent);
+        }else {
+            if (getListenerInfoField(view) != null && getOnTouchListenerField(view) != null){
+                wrapOnTouch(view,motionEvent);
+            }
+        }
+    }
+
+    private void wrapOnTouch(View view,MotionEvent motionEvent){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            Object viewInfo = null;
+            Field touchInfo = null;
+            try {
+                viewInfo = getListenerInfoField(view).get(view);
+                if (viewInfo != null) {
+                    touchInfo = viewInfo.getClass().getDeclaredField("mOnTouchListener");
+                    touchInfo.setAccessible(true);
+                }
+//                if (!clickInfo.isAccessible()) {
+//                    clickInfo.setAccessible(true);
+//                }
+                wrapOnTouch(viewInfo,touchInfo,view,motionEvent);
+            }catch(IllegalAccessException e){
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+
+        }else {
+            try {
+                wrapOnTouch(mListenerInfoField.get(view),mOnTouchListenerField,view,motionEvent);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void wrapOnTouch(Object viewInfo,Field touchInfo,View view,MotionEvent motionEvent){
+        Object touch;
+        try {
+            touch = touchInfo != null ? touchInfo.get(viewInfo) : null;
+            if (!(touch instanceof View.OnTouchListener)){
+                touch = null;
+            }
+
+            View.OnTouchListener source = (View.OnTouchListener) touch;
+            if (source != null) {
+                // 如果source已经是ClickWrapper则不需继续处理
+                if (!(source instanceof TouchWrapper)) {
+                    // 如果source不是ClickWrapper，则首先尝试复用原先已有的ClickWrapper（可能在RecyclerView中对View重新设置了OnClickListener，
+                    // 但是其ClickWrapper对象还在）
+                    Object wrapper = view.getTag(R.id.android_touch_listener);
+                    if (wrapper instanceof TouchWrapper) {
+                        // 如果原先已存在ClickWrapper
+                        // 则对比原先ClickWrapper中的OnClickListener是否与source为同一个实例
+                        if (((TouchWrapper) wrapper).source != source) {
+                            ((TouchWrapper) wrapper).source = source;
+                        }
+                    } else {
+                        // 如果原先不存在ClickWrapper，则创建ClickWrapper
+                        wrapper = new TouchWrapper(source, motionEvent);
+                        view.setTag(R.id.android_touch_listener, wrapper);
+                    }
+
+                    touchInfo.setAccessible(true);
+                    touchInfo.set(viewInfo, wrapper);
+
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /**
+     * [View.OnClickListener]的包装类，内部包装了View的原[View.OnClickListener]，并且增加了点击统计
+     *
+     */
+    private class TouchWrapper implements View.OnTouchListener {
+
+        private View.OnTouchListener source;
+        private MotionEvent ev;
+
+        public TouchWrapper(View.OnTouchListener source, MotionEvent ev) {
+            this.source = source;
+            this.ev = ev;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (source != null){
+                source.onTouch( v, event);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                HBHStatistical.getInstance().delayed();
+            }
+            return false;
+        }
+    }
+
 }
