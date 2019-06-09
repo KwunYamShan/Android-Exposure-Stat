@@ -21,10 +21,11 @@ import static android.view.View.VISIBLE;
 
 public class HBHStatistical {
 
-    private static final String TAG = HBHStatistical.class.getSimpleName();
+    public static final String TAG = HBHStatistical.class.getSimpleName();
     private ActivityLifeCycle mActivityLifeCycle;
     private static View mRootView;
     private Rect mScreenRect;
+    private static final int REPORT_DELAYED = 1;
 
     private static class HelperHolder {
         public static final HBHStatistical mStatistical = new HBHStatistical();
@@ -56,19 +57,15 @@ public class HBHStatistical {
      */
     public boolean hitPoint(View view) {
         view.getGlobalVisibleRect(mRect);
-        Log.e(TAG, "mRect:"+mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
-        Log.e(TAG, "mScreenRect:"+mScreenRect.left + "," + mScreenRect.top + "," + mScreenRect.right + "," + mScreenRect.bottom);
+        Log.e(TAG, "mRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
+        Log.e(TAG, "mScreenRect:" + mScreenRect.left + "," + mScreenRect.top + "," + mScreenRect.right + "," + mScreenRect.bottom);
         boolean contains = mScreenRect.contains(mRect);
         Log.e(TAG, "contains:" + contains);
         return contains;
     }
 
     /**
-     * 根据当前坐标值查找对应位置的View
-     * <p>
-     * 该方法为递归实现，如果传入的布局为[ViewGroup]，则执行递归；否则，则对[View]进行判断。
-     * 在递归过程中，如果发现[ViewGroup]中没有合适的[View]，则会对[ViewGroup]本身进行判断，
-     * 如果[ViewGroup]本身可点击，则会将[ViewGroup]当做点击的[View]
+     * 该方法为递归实现，如果传入的布局为[ViewGroup]，则执行递归添加；否则直接添加出现在屏幕中的view
      */
     public ArrayList<View> findHitView(View parent) {
         ArrayList<View> hitViews = new ArrayList<>();
@@ -76,15 +73,15 @@ public class HBHStatistical {
             // 仅在parent可见，并且命中了点击位置时才对该parent进行判断/递归查找，减少查找的次数，提高效率
             if (parent instanceof AdapterView) {
                 hitViews.add(parent);
-                // 由于在AdapterView中可能会有局部的View可点击的情况，故此处需要对AdapterView中的子View进行递归查询
+                // 由于在AdapterView中可能会有上报局部View的情况，故此处需要对AdapterView中的子View进行递归查询
                 // 如果子View可点击，则只会触发子View的点击，而不会触发AdapterView的点击
                 findHitViewsInGroup((ViewGroup) parent, hitViews);
             } else if (parent instanceof ViewGroup) {
                 hitViews.add(parent);
                 // 如果是ViewGroup，则去对其子View进行查询
                 findHitViewsInGroup((ViewGroup) parent, hitViews);
-            } else if (!(parent instanceof ViewGroup) /*&& parent.isClickable()*/) {
-                // 如果parent本身不是ViewGroup，且可点击，则当做可触发点击事件的View返回
+            } else  {
+                // 如果parent本身不是ViewGroup，则直接将View返回
                 hitViews.add(parent);
             }
         }
@@ -93,7 +90,7 @@ public class HBHStatistical {
 
     /**
      * 对ViewGroup中的所有子View进行查询，如果子View中没有符合条件的View
-     * 则会对父View进行检查，如果父View可点击，则List中会包含父View
+     * 则会对父View进行检查，如果父View可见，并且在屏幕范围内，则List中会包含父View
      */
     public void findHitViewsInGroup(ViewGroup parent, ArrayList<View> hitViews) {
         int childCount = parent.getChildCount();
@@ -102,7 +99,7 @@ public class HBHStatistical {
             ArrayList<View> hitChildren = findHitView(child);
             if (!hitChildren.isEmpty()) {
                 hitViews.addAll(hitChildren);
-            } else if (isVisible(child) /*&& child.isClickable()*/ && hitPoint(child)) {
+            } else if (isVisible(child) && hitPoint(child)) {
                 hitViews.add(child);
             }
         }
@@ -114,23 +111,23 @@ public class HBHStatistical {
         mRootView = activity.getWindow().getDecorView().getRootView();
         mScreenRect = new Rect(0, 0, metrics.widthPixels, metrics.heightPixels);
 
-        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                Log.e(TAG, "--onScrollChanged");
-            }
-        });
+//        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+//            @Override
+//            public void onScrollChanged() {
+//                Log.e(TAG, "--addOnScrollChangedListener");
+//            }
+//        });
         mRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                Log.e(TAG, "--onGlobalLayout");
+                Log.e(TAG, "--addOnGlobalLayoutListener");
             }
         });
         mRootView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
             @Override
             public void onSystemUiVisibilityChange(int visibility) {
                 //用来计算状态栏
-                Log.e(TAG, "--onSystemUiVisibilityChange");
+                Log.e(TAG, "--setOnSystemUiVisibilityChangeListener");
             }
         });
         mRootView.getViewTreeObserver().addOnWindowAttachListener(new ViewTreeObserver.OnWindowAttachListener() {
@@ -143,22 +140,30 @@ public class HBHStatistical {
             @Override
             public void onWindowDetached() {
                 Log.e(TAG, "--onWindowDetached");
+                HBHStatistical.getInstance().cancel();
             }
         });
         mRootView.getViewTreeObserver().addOnTouchModeChangeListener(new ViewTreeObserver.OnTouchModeChangeListener() {
             @Override
             public void onTouchModeChanged(boolean isInTouchMode) {
-                Log.e(TAG, "--onTouchModeChanged:"+isInTouchMode);
+                Log.e(TAG, "--addOnTouchModeChangeListener:" + isInTouchMode);
             }
         });
 
         mRootView.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
             @Override
             public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-                Log.e(TAG, "--onGlobalFocusChanged:");
+                Log.e(TAG, "--addOnGlobalFocusChangeListener:");
             }
         });
-        //此方法无效  会被子view拦截掉
+
+        mRootView.getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
+            @Override
+            public void onWindowFocusChanged(boolean hasFocus) {
+                Log.e(TAG, "--onWindowFocusChanged:");
+            }
+        });
+        //        //此方法无效  会被子view拦截掉
 //        mRootView.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
 //            public boolean onTouch(View v, MotionEvent event) {
@@ -183,9 +188,10 @@ public class HBHStatistical {
             String mark = (String) view.getTag(getMarkId());
             int id = view.getId();
             if (mark != null) {
-                Log.e(TAG, "上报， mark:" + mark + ",id:" + id);
+                Log.e(TAG, "已上报：id:" + id+"     , 数据:" + mark);
+            }else{
+                Log.e(TAG, "非上报：id:" + id);
             }
-            Log.e(TAG, "id:" + id);
         }
     }
 
@@ -194,13 +200,13 @@ public class HBHStatistical {
      */
     public void delayed() {
         cancel();
-        handler.sendEmptyMessageDelayed(1, 5000);
+        handler.sendEmptyMessageDelayed(REPORT_DELAYED, 5000);
     }
 
     /**
      * 取消上报
      */
-    public void cancel(){
+    public void cancel() {
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -208,7 +214,7 @@ public class HBHStatistical {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 1) {
+            if (msg.what == REPORT_DELAYED) {
                 report();
             }
         }
