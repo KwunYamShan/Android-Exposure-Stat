@@ -64,6 +64,8 @@ public class HBHStatistical {
         Log.e(TAG, "mScreenRect:" + mScreenRect.left + "," + mScreenRect.top + "," + mScreenRect.right + "," + mScreenRect.bottom);
         boolean contains = mScreenRect.contains(mRect);
         Log.e(TAG, "contains:" + contains);
+        String mark = (String) view.getTag(getMarkId());
+        Log.e(TAG, "遍历的id:" + view.getId()+"     , 数据:" + mark);
         return contains;
     }
 
@@ -317,7 +319,7 @@ public class HBHStatistical {
             if (source != null) {
                 // 如果source已经是ClickWrapper则不需继续处理
                 if (!(source instanceof TouchWrapper)) {
-                    // 如果source不是ClickWrapper，则首先尝试复用原先已有的ClickWrapper（可能在RecyclerView中对View重新设置了OnClickListener，
+                    // 如果source不是TouchWrapper，则首先尝试复用原先已有的ClickWrapper（可能在RecyclerView中对View重新设置了OnClickListener，
                     // 但是其ClickWrapper对象还在）
                     Object wrapper = view.getTag(R.id.android_touch_listener);
                     if (wrapper instanceof TouchWrapper) {
@@ -336,6 +338,16 @@ public class HBHStatistical {
                     touchInfo.set(viewInfo, wrapper);
 
                 }
+            }else{
+                view.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL){
+                            HBHStatistical.getInstance().delayed();
+                        }
+                        return false;
+                    }
+                });
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -363,7 +375,7 @@ public class HBHStatistical {
             if (source != null){
                 source.onTouch( v, event);
             }
-            if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (event.getAction() == MotionEvent.ACTION_UP && event.getAction() == MotionEvent.ACTION_CANCEL) {
                 HBHStatistical.getInstance().delayed();
             }
             return false;
