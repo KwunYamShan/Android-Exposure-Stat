@@ -7,18 +7,11 @@ import com.wh.stat.HBHStatistical;
 
 public class StatBuilder {
 
-
-    private Context mContext;
     private StatConfig mConfig;
 
     public StatBuilder(Context context) {
-        mContext = context;
         mConfig = new StatConfig();
-    }
-
-    public StatBuilder setTabMark(String tabMark) {
-        mConfig.tabMark = tabMark;
-        return this;
+        mConfig.context = context;
     }
 
     /**
@@ -105,15 +98,11 @@ public class StatBuilder {
     }
 
     /**
-     * 关键方法，在配置完成后进行build就创建好配置了
-     *
-     * @return
+     * 关键方法，在配置完成后进行create就创建好配置了
      */
     public void create() {
-        HBHStatistical.getInstance().initialize(mContext,mConfig);
+        HBHStatistical.getInstance().initialize(mConfig);
     }
-
-
 
 //        /**
 //         * 设置view的可被遮挡范围
@@ -126,6 +115,4 @@ public class StatBuilder {
     /**
      * 上报之后是否需要再次上报
      */
-
-
 }

@@ -15,6 +15,6 @@ public class App extends Application implements IContext {
         new StatBuilder(this)
                 .setDuration(5000)
                 .setDebugModle(true)
-                .setTabMark("mark").create();
+                .create();
     }
 }

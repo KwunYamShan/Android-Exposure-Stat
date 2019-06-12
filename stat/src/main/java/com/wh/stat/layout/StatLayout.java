@@ -31,13 +31,14 @@ public class StatLayout extends FrameLayout  {
     public boolean onTouchEvent(MotionEvent event) {
         if (event != null) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                HBHStatistical.getInstance().cancel();
                 View rootView = getRootView();
                 ArrayList<View> hitViews = HBHStatistical.getInstance().findHitView(rootView);
                 Iterator iterator = hitViews.iterator();
                 while (iterator.hasNext()) {
                     View view = (View) iterator.next();
                     //view.setOnTouchListener(this);
-                    HBHStatistical.getInstance().wrapTouch(view,event);
+                    HBHStatistical.getInstance().wrapTouch(view);
                 }
             }
         }
