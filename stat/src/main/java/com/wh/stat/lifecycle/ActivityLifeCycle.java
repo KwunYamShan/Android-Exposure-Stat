@@ -29,7 +29,7 @@ public class ActivityLifeCycle implements Application.ActivityLifecycleCallbacks
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         ++created;
-        if (activity != null){
+        if (activity != null) {
             LayoutManager.wrap(activity);
         }
     }
@@ -51,7 +51,7 @@ public class ActivityLifeCycle implements Application.ActivityLifecycleCallbacks
     @Override
     public void onActivityResumed(Activity activity) {
         ++resumed;
-        HBHStatistical.getInstance().bind(activity);
+            HBHStatistical.getInstance().bind(activity);
     }
 
     @Override

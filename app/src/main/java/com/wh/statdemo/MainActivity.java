@@ -11,7 +11,8 @@ import android.widget.Toast;
 
 import com.wh.stat.HBHStatistical;
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = AppCompatActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,42 +27,28 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         TextView tvHello = findViewById(R.id.tv_hello);
         tvHello.setTag(HBHStatistical.getInstance().getMarkId(),"Hello World");
         //拦截触摸事件，验证statLayout的触摸事件是否被拦截
-        tvHello.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
+
         tvHello.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "erwer", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getString(R.string.app_name), Toast.LENGTH_SHORT).show();
             }
         });
-        tvHello.setOnTouchListener(this);
+        tvHello.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.e(TAG,"tvHello");
+                return false;
+            }
+        });
         ScrollView view = findViewById(R.id.scrollView);
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.e("AAA","333");
+                Log.e(TAG,"ScrollView");
                 return false;
             }
         });
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP){
-            Log.e("AAA","222");
-        }
-        return super.onTouchEvent(event);
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP){
-            Log.e("AAA","222");
-        }
-        return true;
-    }
 }

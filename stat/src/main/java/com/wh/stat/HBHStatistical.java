@@ -1,34 +1,40 @@
 package com.wh.stat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 
 import com.wh.stat.lifecycle.ActivityLifeCycle;
 import com.wh.stat.lifecycle.IContext;
+import com.wh.stat.utils.StatConfig;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static android.content.Context.WINDOW_SERVICE;
 import static android.view.View.VISIBLE;
 
 public class HBHStatistical {
 
     public static final String TAG = HBHStatistical.class.getSimpleName();
-    private ActivityLifeCycle mActivityLifeCycle;
     private static View mRootView;
-    private Rect mScreenRect;
     private static final int REPORT_DELAYED = 1;
+
+    private StatConfig mConfig;
+    private Context mContext;
 
     private static class HelperHolder {
         public static final HBHStatistical mStatistical = new HBHStatistical();
@@ -40,15 +46,29 @@ public class HBHStatistical {
 
     private Rect mRect = new Rect();
 
-
     public int getMarkId() {
         return R.id.mark;
     }
 
+    public void initialize(Context context, StatConfig config) {
+        mContext = context;
+        mConfig = config;
+        if (!TextUtils.isEmpty(config.tabMark)) {
+            ActivityLifeCycle mActivityLifeCycle = new ActivityLifeCycle();
+            if (context instanceof IContext) {
+                ((IContext) context).registerActivityLifecycleCallbacks(mActivityLifeCycle);
+            } else {
+                throw new ClassCastException("Application没有实现IContext接口");
+            }
 
-    public void initialize(IContext app) {
-        mActivityLifeCycle = new ActivityLifeCycle();
-        app.registerActivityLifecycleCallbacks(mActivityLifeCycle);
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager wm = (WindowManager) mContext.getSystemService(WINDOW_SERVICE);
+            wm.getDefaultDisplay().getRealMetrics(metrics);
+            if (mConfig.mScreenRect == null) {
+               // mConfig.mScreenRect = new Rect(0 + mConfig.left, 0 + mConfig.top, metrics.widthPixels - mConfig.right, metrics.heightPixels - mConfig.bottom);
+                mConfig.mScreenRect = new Rect(0, 0 , metrics.widthPixels , metrics.heightPixels );
+            }
+        }
     }
 
     public boolean isVisible(View view) {
@@ -61,11 +81,11 @@ public class HBHStatistical {
     public boolean hitPoint(View view) {
         view.getGlobalVisibleRect(mRect);
         Log.e(TAG, "mRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
-        Log.e(TAG, "mScreenRect:" + mScreenRect.left + "," + mScreenRect.top + "," + mScreenRect.right + "," + mScreenRect.bottom);
-        boolean contains = mScreenRect.contains(mRect);
+        Log.e(TAG, "mScreenRect:" + mConfig.mScreenRect.left + "," + mConfig.mScreenRect.top + "," + mConfig.mScreenRect.right + "," + mConfig.mScreenRect.bottom);
+        boolean contains = mConfig.mScreenRect.contains(mRect);
         Log.e(TAG, "contains:" + contains);
         String mark = (String) view.getTag(getMarkId());
-        Log.e(TAG, "遍历的id:" + view.getId()+"     , 数据:" + mark);
+        Log.e(TAG, "遍历的id:" + view.getId() + "     , 数据:" + mark);
         return contains;
     }
 
@@ -85,7 +105,7 @@ public class HBHStatistical {
                 hitViews.add(parent);
                 // 如果是ViewGroup，则去对其子View进行查询
                 findHitViewsInGroup((ViewGroup) parent, hitViews);
-            } else  {
+            } else {
                 // 如果parent本身不是ViewGroup，则直接将View返回
                 hitViews.add(parent);
             }
@@ -111,10 +131,9 @@ public class HBHStatistical {
     }
 
     public void bind(Activity activity) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindow().getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+
         mRootView = activity.getWindow().getDecorView().getRootView();
-        mScreenRect = new Rect(0, 0, metrics.widthPixels, metrics.heightPixels);
+
 
 //        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
 //            @Override
@@ -193,8 +212,8 @@ public class HBHStatistical {
             String mark = (String) view.getTag(getMarkId());
             int id = view.getId();
             if (mark != null) {
-                Log.e(TAG, "已上报：id:" + id+"     , 数据:" + mark);
-            }else{
+                Log.e(TAG, "已上报：id:" + id + "     , 数据:" + mark);
+            } else {
                 Log.e(TAG, "非上报：id:" + id);
             }
         }
@@ -205,7 +224,7 @@ public class HBHStatistical {
      */
     public void delayed() {
         cancel();
-        handler.sendEmptyMessageDelayed(REPORT_DELAYED, 5000);
+        handler.sendEmptyMessageDelayed(REPORT_DELAYED, mConfig.delayTime);
     }
 
     /**
@@ -226,12 +245,14 @@ public class HBHStatistical {
     };
     private Field mListenerInfoField;
     private Field mOnTouchListenerField;
+
     /**
      * 通过反射获取mListenerInfo
+     *
      * @param view
      * @return
      */
-    private Field getListenerInfoField(View view){
+    private Field getListenerInfoField(View view) {
         Field declaredField = null;
         try {
             // 通过反射拿到mListenerInfo，并且设置为可访问（用于后续替换点击事件）
@@ -249,11 +270,12 @@ public class HBHStatistical {
         }
         return declaredField;
     }
-    private Field getOnTouchListenerField(View view){
+
+    private Field getOnTouchListenerField(View view) {
         Field clickInfo = null;
         try {
             Object viewInfo = getListenerInfoField(view).get(view);
-            if (viewInfo != null){
+            if (viewInfo != null) {
 
                 clickInfo = viewInfo.getClass().getDeclaredField("mOnTouchListener");
                 if (!clickInfo.isAccessible()) {
@@ -268,17 +290,18 @@ public class HBHStatistical {
         }
         return clickInfo;
     }
-    public void wrapTouch(View view , MotionEvent motionEvent){
+
+    public void wrapTouch(View view, MotionEvent motionEvent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            wrapOnTouch(view,motionEvent);
-        }else {
-            if (getListenerInfoField(view) != null && getOnTouchListenerField(view) != null){
-                wrapOnTouch(view,motionEvent);
+            wrapOnTouch(view, motionEvent);
+        } else {
+            if (getListenerInfoField(view) != null && getOnTouchListenerField(view) != null) {
+                wrapOnTouch(view, motionEvent);
             }
         }
     }
 
-    private void wrapOnTouch(View view,MotionEvent motionEvent){
+    private void wrapOnTouch(View view, MotionEvent motionEvent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
             Object viewInfo = null;
             Field touchInfo = null;
@@ -291,45 +314,45 @@ public class HBHStatistical {
 //                if (!clickInfo.isAccessible()) {
 //                    clickInfo.setAccessible(true);
 //                }
-                wrapOnTouch(viewInfo,touchInfo,view,motionEvent);
-            }catch(IllegalAccessException e){
+                wrapOnTouch(viewInfo, touchInfo, view, motionEvent);
+            } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
 
-        }else {
+        } else {
             try {
-                wrapOnTouch(mListenerInfoField.get(view),mOnTouchListenerField,view,motionEvent);
+                wrapOnTouch(mListenerInfoField.get(view), mOnTouchListenerField, view, motionEvent);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void wrapOnTouch(Object viewInfo,Field touchInfo,View view,MotionEvent motionEvent){
+    private void wrapOnTouch(Object viewInfo, Field touchInfo, View view, MotionEvent motionEvent) {
         Object touch;
         try {
             touch = touchInfo != null ? touchInfo.get(viewInfo) : null;
-            if (!(touch instanceof View.OnTouchListener)){
+            if (!(touch instanceof View.OnTouchListener)) {
                 touch = null;
             }
 
             View.OnTouchListener source = (View.OnTouchListener) touch;
             if (source != null) {
-                // 如果source已经是ClickWrapper则不需继续处理
+                // 如果source已经是TouchWrapper则不需继续处理
                 if (!(source instanceof TouchWrapper)) {
-                    // 如果source不是TouchWrapper，则首先尝试复用原先已有的ClickWrapper（可能在RecyclerView中对View重新设置了OnClickListener，
-                    // 但是其ClickWrapper对象还在）
+                    // 如果source不是TouchWrapper，则首先尝试复用原先已有的TouchWrapper（可能在RecyclerView中对View重新设置了OnTouchListener，
+                    // 但是其TouchWrapper对象还在）
                     Object wrapper = view.getTag(R.id.android_touch_listener);
                     if (wrapper instanceof TouchWrapper) {
-                        // 如果原先已存在ClickWrapper
-                        // 则对比原先ClickWrapper中的OnClickListener是否与source为同一个实例
+                        // 如果原先已存在TouchWrapper
+                        // 则对比原先TouchWrapper中的OnTouchListener是否与source为同一个实例
                         if (((TouchWrapper) wrapper).source != source) {
                             ((TouchWrapper) wrapper).source = source;
                         }
                     } else {
-                        // 如果原先不存在ClickWrapper，则创建ClickWrapper
+                        // 如果原先不存在TouchWrapper，则创建TouchWrapper
                         wrapper = new TouchWrapper(source, motionEvent);
                         view.setTag(R.id.android_touch_listener, wrapper);
                     }
@@ -338,11 +361,11 @@ public class HBHStatistical {
                     touchInfo.set(viewInfo, wrapper);
 
                 }
-            }else{
+            } else {
                 view.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL){
+                        if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                             HBHStatistical.getInstance().delayed();
                         }
                         return false;
@@ -357,8 +380,7 @@ public class HBHStatistical {
 
 
     /**
-     * [View.OnClickListener]的包装类，内部包装了View的原[View.OnClickListener]，并且增加了点击统计
-     *
+     * [View.OnTouchListener]的包装类，内部包装了View的原[View.OnTouchListener]，并且增加了点击统计
      */
     private class TouchWrapper implements View.OnTouchListener {
 
@@ -372,8 +394,8 @@ public class HBHStatistical {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (source != null){
-                source.onTouch( v, event);
+            if (source != null) {
+                source.onTouch(v, event);
             }
             if (event.getAction() == MotionEvent.ACTION_UP && event.getAction() == MotionEvent.ACTION_CANCEL) {
                 HBHStatistical.getInstance().delayed();
