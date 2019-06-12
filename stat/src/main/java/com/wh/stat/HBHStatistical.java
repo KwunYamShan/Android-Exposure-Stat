@@ -397,7 +397,7 @@ public class HBHStatistical {
             if (source != null) {
                 source.onTouch(v, event);
             }
-            if (event.getAction() == MotionEvent.ACTION_UP && event.getAction() == MotionEvent.ACTION_CANCEL) {
+            if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 HBHStatistical.getInstance().delayed();
             }
             return false;
