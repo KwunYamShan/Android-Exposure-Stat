@@ -10,8 +10,8 @@ public class LayoutManager {
         Window window = activity.getWindow();
         View decorView = window.getDecorView();
         if (decorView != null && decorView instanceof ViewGroup){
-            StatLayout trackLayout = new StatLayout(activity);
-            ((ViewGroup) decorView).addView(trackLayout,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            StatLayout statLayout = new StatLayout(activity);
+            ((ViewGroup) decorView).addView(statLayout,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
         }
     }
