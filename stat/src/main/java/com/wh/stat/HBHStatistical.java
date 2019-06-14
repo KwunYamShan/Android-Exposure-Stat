@@ -93,7 +93,8 @@ public class HBHStatistical {
                     HBHStatistical.getInstance().delayed();
                 } else {
                     HBHStatistical.getInstance().cancel();
-                    mRootView.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
+                    //页面层叠的情况remove会出问题
+                    //mRootView.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
                 }
             }
         });
@@ -104,16 +105,27 @@ public class HBHStatistical {
 //        mRootView.getViewTreeObserver().addOnWindowAttachListener(new ViewTreeObserver.OnWindowAttachListener() {
 //            @Override
 //            public void onWindowAttached() {
-//                Log.e(TAG, "onWindowAttached");
-//                HBHStatistical.getInstance().delayed();
+//                Log.e(TAG, "addOnWindowAttachListener:onWindowAttached");
+//                //HBHStatistical.getInstance().delayed();
 //            }
 //
 //            @Override
 //            public void onWindowDetached() {
-//                Log.e(TAG, "onWindowDetached");
-//                HBHStatistical.getInstance().cancel();
+//                Log.e(TAG, "addOnWindowAttachListener:onWindowDetached");
+//                //HBHStatistical.getInstance().cancel();
 //            }
 //        });
+
+        /**
+         * 当在一个视图树中的焦点状态或者可见性发生改变时调用OnGlobalFocusChangeListener的onGlobalFocusChanged()函数
+         */
+//        mRootView.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
+//            @Override
+//            public void onGlobalFocusChanged(View oldFocus, View newFocus) {
+//                Log.e(TAG, "addOnGlobalFocusChangeListener");
+//            }
+//        });
+
         /**
          * 当一个视图发生滚动时调用OnScrollChangedListener的onScrollChanged()函数
          */
@@ -129,6 +141,7 @@ public class HBHStatistical {
 //                Log.e(TAG, "addOnGlobalLayoutListener");
 //            }
 //        });
+
         /**
          * 监听状态栏页面的隐藏与显示、动态显示与隐藏状态栏
          */
@@ -150,16 +163,7 @@ public class HBHStatistical {
 //                Log.e(TAG, "addOnTouchModeChangeListener:" + isInTouchMode);
 //            }
 //        });
-        /**
-         * 当在一个视图树中的焦点状态或者可见性发生改变时调用OnGlobalFocusChangeListener的onGlobalFocusChanged()函数
-         */
-//        mRootView.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
-//            @Override
-//            public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-//                Log.e(TAG, "addOnGlobalFocusChangeListener");
-//            }
-//        });
-//
+
         /**
          * 此方法无效  会被子view拦截掉
          */
