@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +11,17 @@ import android.widget.FrameLayout;
 
 import com.wh.stat.HBHStatistical;
 import com.wh.stat.R;
+import com.wh.stat.utils.LogUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import static com.wh.stat.HBHStatistical.TAG;
-
+/**
+ * @author wh.
+ * @time 2019/6/14.
+ * @explain
+ */
 public class StatLayout extends FrameLayout implements View.OnTouchListener {
     private Rect mRect = new Rect();
 
@@ -72,11 +75,11 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
      */
     public boolean displayView(View view) {
         view.getGlobalVisibleRect(mRect);
-        //Log.e(TAG, "mRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
-        //Log.e(TAG, "mScreenRect:" + mConfig.mScreenRect.left + "," + mConfig.mScreenRect.top + "," + mConfig.mScreenRect.right + "," + mConfig.mScreenRect.bottom);
+        //LogUtil.e("mRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
+        //LogUtil.e("mScreenRect:" + mConfig.mScreenRect.left + "," + mConfig.mScreenRect.top + "," + mConfig.mScreenRect.right + "," + mConfig.mScreenRect.bottom);
         boolean contains = HBHStatistical.getInstance().getConfig().mScreenRect.contains(mRect);
         String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-        Log.e(TAG, "View是否包含了对应的坐标:" + contains + ",  id:" + view.getId() + ",   数据：" + mark);
+        LogUtil.e( "View是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",   数据：" + mark);
         return contains;
     }
 

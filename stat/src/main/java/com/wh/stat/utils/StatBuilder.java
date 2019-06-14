@@ -20,10 +20,21 @@ public class StatBuilder {
     }
 
     /**
-     * 设置是否打印log
+     * 给需要曝光的view设置的tagId, 必须是id类型否则会报错
+     * 在main-res-values目录下创建ids.xml文件:
+     * <resources>
+     *      <item name="tag_id" type="id"/>
+     * </resources>
+     */
+    public StatBuilder setTagId(int id) {
+        mConfig.tagId = id;
+        return this;
+    }
+
+    /**
+     * 设置是否为线上版本
      *
      * @param debugModel
-     * @return true 打印
      */
     public StatBuilder setDebugModle(boolean debugModel) {
         mConfig.debugModel = debugModel;

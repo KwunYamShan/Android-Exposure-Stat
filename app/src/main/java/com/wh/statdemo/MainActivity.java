@@ -9,8 +9,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.wh.stat.HBHStatistical;
-
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = AppCompatActivity.class.getSimpleName();
 
@@ -25,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         TextView tvHello = findViewById(R.id.tv_hello);
-        tvHello.setTag(HBHStatistical.getInstance().getTagId(),"Hello World");
+        tvHello.setTag(App.mStatTagId,"Hello World");
         //拦截触摸事件，验证statLayout的触摸事件是否被拦截
 
         tvHello.setOnClickListener(new View.OnClickListener() {

@@ -11,11 +11,12 @@ import android.graphics.Rect;
 public class StatConfig {
     public static final int REPORT_DELAYED = 1;
     public Context context;
+    public int tagId;
     public int top;
     public int bottom;
     public int left;
     public int right;
     public Rect mScreenRect;
     public long delayTime = 5000;
-    public boolean debugModel = true;
+    public boolean debugModel ;
 }

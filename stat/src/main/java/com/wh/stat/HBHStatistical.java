@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -15,6 +14,7 @@ import android.view.WindowManager;
 import com.wh.stat.layout.StatLayout;
 import com.wh.stat.lifecycle.ActivityLifeCycle;
 import com.wh.stat.lifecycle.IContext;
+import com.wh.stat.utils.LogUtil;
 import com.wh.stat.utils.StatConfig;
 
 import java.util.ArrayList;
@@ -29,7 +29,6 @@ import static android.content.Context.WINDOW_SERVICE;
  */
 public class HBHStatistical {
 
-    public static final String TAG = HBHStatistical.class.getSimpleName();
     private static View mRootView;
 
     private StatConfig mConfig;
@@ -44,6 +43,9 @@ public class HBHStatistical {
 
     public void initialize(StatConfig config) {
         mConfig = config;
+        if (mConfig.tagId == 0) {
+            throw new NullPointerException("StatBuilder在构建时需要初始化ID：setTagId(R.id.xxx)");
+        }
         ActivityLifeCycle mActivityLifeCycle = new ActivityLifeCycle();
         if (mConfig.context instanceof IContext) {
             ((IContext) mConfig.context).registerActivityLifecycleCallbacks(mActivityLifeCycle);
@@ -59,14 +61,8 @@ public class HBHStatistical {
         }
     }
 
-    /**
-     * 给需要曝光的view设置的tagId，值不可为null
-     * 例：mTvTitle.setTag(HBHStatistical.getInstance().getTagId(),"标题");
-     *
-     * @return
-     */
     public int getTagId() {
-        return R.id.mark;
+        return mConfig.tagId;
     }
 
     public StatConfig getConfig() {
@@ -88,7 +84,7 @@ public class HBHStatistical {
         mRootView.getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
-                Log.e(TAG, "onWindowFocusChanged:"+hasFocus);
+                LogUtil.e("onWindowFocusChanged:" + hasFocus);
                 if (hasFocus) {
                     HBHStatistical.getInstance().delayed();
                 } else {
@@ -105,13 +101,13 @@ public class HBHStatistical {
 //        mRootView.getViewTreeObserver().addOnWindowAttachListener(new ViewTreeObserver.OnWindowAttachListener() {
 //            @Override
 //            public void onWindowAttached() {
-//                Log.e(TAG, "addOnWindowAttachListener:onWindowAttached");
+//                LogUtil.e("addOnWindowAttachListener:onWindowAttached");
 //                //HBHStatistical.getInstance().delayed();
 //            }
 //
 //            @Override
 //            public void onWindowDetached() {
-//                Log.e(TAG, "addOnWindowAttachListener:onWindowDetached");
+//                LogUtil.e("addOnWindowAttachListener:onWindowDetached");
 //                //HBHStatistical.getInstance().cancel();
 //            }
 //        });
@@ -122,7 +118,7 @@ public class HBHStatistical {
 //        mRootView.getViewTreeObserver().addOnGlobalFocusChangeListener(new ViewTreeObserver.OnGlobalFocusChangeListener() {
 //            @Override
 //            public void onGlobalFocusChanged(View oldFocus, View newFocus) {
-//                Log.e(TAG, "addOnGlobalFocusChangeListener");
+//                LogUtil.e("addOnGlobalFocusChangeListener");
 //            }
 //        });
 
@@ -132,13 +128,13 @@ public class HBHStatistical {
 //        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
 //            @Override
 //            public void onScrollChanged() {
-//                Log.e(TAG, "addOnScrollChangedListener");
+//                LogUtil.e( "addOnScrollChangedListener");
 //            }
 //        });
 //        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
 //            public void onGlobalLayout() {
-//                Log.e(TAG, "addOnGlobalLayoutListener");
+//                LogUtil.e("addOnGlobalLayoutListener");
 //            }
 //        });
 
@@ -149,7 +145,7 @@ public class HBHStatistical {
 //            @Override
 //            public void onSystemUiVisibilityChange(int visibility) {
 //                //状态栏
-//                Log.e(TAG, "setOnSystemUiVisibilityChangeListener:" + visibility);
+//                LogUtil.e("setOnSystemUiVisibilityChangeListener:" + visibility);
 //                if (visibility == View.SYSTEM_UI_FLAG_FULLSCREEN || visibility == View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) {
 //                    //全屏
 //                } else {
@@ -160,7 +156,7 @@ public class HBHStatistical {
 //        mRootView.getViewTreeObserver().addOnTouchModeChangeListener(new ViewTreeObserver.OnTouchModeChangeListener() {
 //            @Override
 //            public void onTouchModeChanged(boolean isInTouchMode) {
-//                Log.e(TAG, "addOnTouchModeChangeListener:" + isInTouchMode);
+//               LogUtil.e("addOnTouchModeChangeListener:" + isInTouchMode);
 //            }
 //        });
 
@@ -193,9 +189,9 @@ public class HBHStatistical {
             if (isNeedReport(view)) {
                 list.add(view);
                 String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-                Log.e(TAG, "需上报：id:" + id + "     , 数据:" + mark);
+                LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
             } else {
-                Log.e(TAG, "非上报：id:" + id);
+                LogUtil.e("非上报：id:" + id);
             }
         }
         if (list.size() > 0) {

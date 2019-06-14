@@ -13,12 +13,14 @@ import java.util.Iterator;
 
 public class App extends Application implements IContext {
     private static final String TAG = App.class.getSimpleName();
+    public static int mStatTagId = R.id.mark;
 
     @Override
     public void onCreate() {
         super.onCreate();
         //HBHStatistical.getInstance().initialize(this);
         new StatBuilder(this)
+                .setTagId(mStatTagId)
                 .setDuration(5000)
                 .setDebugModle(true)
                 .setViewResultListener(new HBHStatistical.ViewResultListener() {
@@ -28,7 +30,7 @@ public class App extends Application implements IContext {
                         Iterator iterator = displayViews.iterator();
                         while (iterator.hasNext()) {
                             View view = (View) iterator.next();
-                            String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
+                            String mark = (String) view.getTag(mStatTagId);
                             Log.e(TAG, "已上报：id:" + view.getId() + "     , 数据:" + mark);
                         }
                     }
