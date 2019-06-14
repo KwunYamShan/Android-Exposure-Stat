@@ -5,6 +5,11 @@ import android.graphics.Rect;
 
 import com.wh.stat.HBHStatistical;
 
+/**
+ * @author wh.
+ * @time 2019/6/14.
+ * @explain 构建类
+ */
 public class StatBuilder {
 
     private StatConfig mConfig;
@@ -87,6 +92,7 @@ public class StatBuilder {
         mConfig.right = right;
         return this;
     }
+
     /**
      * 设置时长
      *
@@ -98,15 +104,26 @@ public class StatBuilder {
     }
 
     /**
+     * 返回绑定数据View的集合
+     *
+     * @param viewResultListener
+     * @return
+     */
+    public StatBuilder setViewResultListener(HBHStatistical.ViewResultListener viewResultListener) {
+        HBHStatistical.getInstance().setViewResultListener(viewResultListener);
+        return this;
+    }
+
+    /**
      * 关键方法，在配置完成后进行create就创建好配置了
      */
     public void create() {
         HBHStatistical.getInstance().initialize(mConfig);
     }
 
-//        /**
-//         * 设置view的可被遮挡范围
-//         */
+    /**
+     * 设置view的可被遮挡范围
+     */
 //        public Builder setCoverRange(){
 //
 //            return this;

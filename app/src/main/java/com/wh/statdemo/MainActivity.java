@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         TextView tvHello = findViewById(R.id.tv_hello);
-        tvHello.setTag(HBHStatistical.getInstance().getMarkId(),"Hello World");
+        tvHello.setTag(HBHStatistical.getInstance().getTagId(),"Hello World");
         //拦截触摸事件，验证statLayout的触摸事件是否被拦截
 
         tvHello.setOnClickListener(new View.OnClickListener() {

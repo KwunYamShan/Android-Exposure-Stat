@@ -75,7 +75,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
         //Log.e(TAG, "mRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
         //Log.e(TAG, "mScreenRect:" + mConfig.mScreenRect.left + "," + mConfig.mScreenRect.top + "," + mConfig.mScreenRect.right + "," + mConfig.mScreenRect.bottom);
         boolean contains = HBHStatistical.getInstance().getConfig().mScreenRect.contains(mRect);
-        String mark = (String) view.getTag(HBHStatistical.getInstance().getMarkId());
+        String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
         Log.e(TAG, "View是否包含了对应的坐标:" + contains + ",  id:" + view.getId() + ",   数据：" + mark);
         return contains;
     }
