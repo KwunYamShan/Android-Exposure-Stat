@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import com.wh.stat.HBHStatistical;
 import com.wh.stat.R;
 import com.wh.stat.utils.LogUtil;
+import com.wh.stat.utils.StatConfig;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -74,12 +75,16 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
      * 判断一个View是否包含了对应的坐标
      */
     public boolean displayView(View view) {
+        StatConfig mConfig = HBHStatistical.getInstance().getConfig();
         view.getGlobalVisibleRect(mRect);
-        //LogUtil.e("mRect:" + mRect.left + "," + mRect.top + "," + mRect.right + "," + mRect.bottom);
-        //LogUtil.e("mScreenRect:" + mConfig.mScreenRect.left + "," + mConfig.mScreenRect.top + "," + mConfig.mScreenRect.right + "," + mConfig.mScreenRect.bottom);
-        boolean contains = HBHStatistical.getInstance().getConfig().mScreenRect.contains(mRect);
+
+        if (view.getMeasuredWidth() > (mRect.right - mRect.left) || view.getMeasuredHeight() > (mRect.bottom - mRect.top)) {
+            LogUtil.e("拦截显示不完整的view：实际宽:"+view.getMeasuredWidth()+"+    显示的宽：" + (mRect.right - mRect.left)+ ",实际高："+view.getMeasuredHeight()+"+    显示的高："+ (mRect.bottom - mRect.top));
+            return false;
+        }
+         boolean contains = mConfig.mScreenRect.contains(mRect);
         String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-        LogUtil.e( "View是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",   数据：" + mark);
+        LogUtil.e("View是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",   数据：" + mark);
         return contains;
     }
 
