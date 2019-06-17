@@ -1,15 +1,13 @@
-# Android曝光统计
-曝光统计：对在屏幕中出现的view进行统计
-    优点:
-    耦合度极低，在Application中注册与移除，不影响项目正常运行
-    对封装的数据不关心，只按配置的规则返回绑定过并且曝光了的view，至于数据交由调用者自己去解析并上报
-# 主要特点
+## Android曝光统计
+曝光统计：对在屏幕中出现的view进行统计，便于分析用户偏好，提高用户留存率
+  
+## 主要特点
 1. 调用者简单的配置曝光规则，即可以拿到曝光的view集合
-2. 曝光的view数据交由调用者自行解析处理
-3. 可以在view的Visible状态，并且该view与屏幕有交集时触发
+2. 可设置曝光的屏幕范围
+3. 可以在view的Visible状态，并且该view与屏幕有交集时触发统计事件
 4. 可设置曝光时长，曝光多久后触发统计事件
-5. 可设置曝光的屏幕范围
-# 使用
+5. 统计结果在类库初始化时以回调的方式交由调用者处理
+## 使用
 1. App下的build.gradle添加依赖类库
 ```Java
     implementation 'com.wh.repo:statistical:1.2.8'
@@ -36,7 +34,7 @@ allprojects {
     }
 }
 ```
-1. 在Application类中初始化,需要继承IContext
+3. 在Application类中初始化,需要继承IContext
 ```Java
 public class App extends Application implements IContext {
 
@@ -97,13 +95,13 @@ public class App extends Application implements IContext {
 
 }
 ```
-2. 给需要上报的view设置tag
+4. 给需要上报的view设置tag
 ```Java
 TextView tvHello = findViewById(R.id.tv_hello);
 
 tvHello.setTag(App.mStatTagId,"Hello World");
 ```
-3. 结果返回在onViewResult方法中，自行处理
+5. 结果返回在onViewResult方法中，自行处理
 ```Java
 public void onViewResult(ArrayList<View> displayViews) {
 
