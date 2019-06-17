@@ -13,13 +13,13 @@
 ## 使用
 1. App下的build.gradle添加依赖类库
 ```Java
-    implementation 'com.wh.repo:statistical:1.2.8'
+    implementation 'com.wh.repo:Android-Exposure-Stat:1.0.0'
 ```
 2. Project下的build.gradle添加仓库地址
 ```Java
 buildscript {
     repositories {
-        maven { url"http://192.168.11.215:8081/repository/android2/" }    
+        maven { url"https://dl.bintray.com/kwunyamshan/maven" }    
         ...
     }
     dependencies {
@@ -32,7 +32,7 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url"http://192.168.11.215:8081/repository/android2/" }
+        maven { url"https://dl.bintray.com/kwunyamshan/maven" }
         ...
     }
 }
