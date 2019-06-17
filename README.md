@@ -1,4 +1,7 @@
 ## Android曝光统计
+[![License](https://img.shields.io/badge/License%20-Apache%202-337ab7.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[ ![Download](https://api.bintray.com/packages/kwunyamshan/maven/Android-Exposure-Stat/images/download.svg) ](https://bintray.com/kwunyamshan/maven/Android-Exposure-Stat/_latestVersion)
+
 曝光统计：对在屏幕中出现的view进行统计，便于分析用户偏好，提高用户留存率
   
 ## 主要特点
