@@ -2,26 +2,24 @@
 
 buildscript {
     repositories {
-       maven { url NEXUS_URL }
+        maven{url BINTRAY_URL}
         google()
         jcenter()
         
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.1'
-        
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.novoda:bintray-release:0.9.1'
     }
 }
 
 allprojects {
     repositories {
-        maven { url NEXUS_URL }
         google()
         jcenter()
-        
+        maven{url BINTRAY_URL}
     }
+
 }
 
 task clean(type: Delete) {
