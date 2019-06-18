@@ -19,4 +19,5 @@ public class StatConfig {
     public Rect mScreenRect;
     public long delayTime = 5000;
     public boolean debugModel ;
+    public int coverRange;
 }

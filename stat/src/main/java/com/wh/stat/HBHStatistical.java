@@ -57,7 +57,8 @@ public class HBHStatistical {
         WindowManager wm = (WindowManager) mConfig.context.getSystemService(WINDOW_SERVICE);
         wm.getDefaultDisplay().getRealMetrics(metrics);
         if (mConfig.mScreenRect == null) {
-            mConfig.mScreenRect = new Rect(0 + mConfig.left, 0 + mConfig.top, metrics.widthPixels - mConfig.right, metrics.heightPixels - mConfig.bottom);
+            //mConfig.mScreenRect = new Rect(0 + mConfig.left, 0 + mConfig.top, metrics.widthPixels - mConfig.right, metrics.heightPixels - mConfig.bottom);
+            mConfig.mScreenRect = new Rect(0 , 0 , metrics.widthPixels, metrics.heightPixels );
         }
     }
 
@@ -177,26 +178,29 @@ public class HBHStatistical {
     }
 
     /**
-     * 上报
+     *  洗数据，返回结果
      */
-    public void report(ArrayList<View> displayViews) {
-        Iterator iterator = displayViews.iterator();
-        ArrayList<View> list = new ArrayList();
-
-        while (iterator.hasNext()) {
-            View view = (View) iterator.next();
-            int id = view.getId();
-            if (isNeedReport(view)) {
-                list.add(view);
-                String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-                LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
-            } else {
-                LogUtil.e("非上报：id:" + id);
+    public void report() {
+        StatLayout statLayout = findCurrentStatLayout();
+        if (statLayout != null) {
+            ArrayList<View> displayView = statLayout.findDisplayView(mRootView);
+            Iterator iterator = displayView.iterator();
+            ArrayList<View> list = new ArrayList();
+            while (iterator.hasNext()) {
+                View view = (View) iterator.next();
+                int id = view.getId();
+                if (isNeedReport(view) && statLayout.isCoverView(view)) {
+                    list.add(view);
+                    String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
+                    LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
+                } else {
+                    LogUtil.e("非上报：id:" + id);
+                }
             }
-        }
-        if (list.size() > 0) {
-            if (mViewResultListener != null) {
-                mViewResultListener.onViewResult(list);
+            if (list.size() > 0) {
+                if (mViewResultListener != null) {
+                    mViewResultListener.onViewResult(list);
+                }
             }
         }
     }
@@ -232,11 +236,7 @@ public class HBHStatistical {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == StatConfig.REPORT_DELAYED) {
-                StatLayout statLayout = findCurrentStatLayout();
-                if (statLayout != null) {
-                    ArrayList<View> displayView = statLayout.findDisplayView(mRootView);
-                    HBHStatistical.getInstance().report(displayView);
-                }
+                HBHStatistical.getInstance().report();
             }
         }
     };
