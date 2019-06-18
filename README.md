@@ -62,8 +62,8 @@ public class App extends Application implements IContext {
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
                  .setDuration(5000)
 
-                //设置曝光的屏幕范围
-                 .setSubRange(0,0,screenWidth,screenHeight)
+                //设置view的可被遮挡范围
+                 .setCoverRange(20)
 
                 //设置是否为线上版本，目前的区别就是是否需要打日志
                  .setDebugModle(true)
