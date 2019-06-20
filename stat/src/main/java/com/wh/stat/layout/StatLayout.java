@@ -79,7 +79,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
         view.getGlobalVisibleRect(mRect);
         boolean contains = mConfig.mScreenRect.contains(mRect);
         String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-        LogUtil.e("View是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",  " + mRect.left + "+" + mRect.top + "+" + mRect.right + "+" + mRect.bottom + ", 数据：" + mark);
+        LogUtil.e("displayView 是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",  " + mRect.left + "+" + mRect.top + "+" + mRect.right + "+" + mRect.bottom + ", 数据：" + mark);
         return contains;
     }
 
@@ -116,7 +116,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
      */
     public boolean isCompleteView(View view) {
         view.getGlobalVisibleRect(mRect);
-        LogUtil.e("显示完整的view+" + view.getId() + "+：实际宽:" + view.getMeasuredWidth() + "+" + (mRect.right - mRect.left) + ",实际高：" + view.getMeasuredHeight() + "+" + (mRect.bottom - mRect.top));
+        LogUtil.e("isCompleteView viewId:" + view.getId() + "，实际宽:" + view.getMeasuredWidth() + "，显示宽：" + (mRect.right - mRect.left) + ",实际高：" + view.getMeasuredHeight() + "，显示高：" + (mRect.bottom - mRect.top));
         if (view.getMeasuredWidth() <= (mRect.right - mRect.left) && view.getMeasuredHeight() <= (mRect.bottom - mRect.top)) {
             return true;
         }
@@ -138,11 +138,10 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
         coverRange = coverRange <= 0 ? 1 : coverRange;
         coverRange = coverRange >= 100 ? 100 : coverRange;
         float percent = (float) (100 - coverRange) / 100;
-        LogUtil.e("测量的view宽高:" + "view.getMeasuredWidth()" + view.getMeasuredWidth() + ", view.getMeasuredHeight()" + view.getMeasuredHeight());
-        LogUtil.e("计算的view大小" + ((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent));
-        LogUtil.e("显示的view大小" + (mRect.right - mRect.left) * (mRect.bottom - mRect.top));
+        LogUtil.e("isViewCoverRange 测量的view宽高:" + "view.getMeasuredWidth()" + view.getMeasuredWidth() + ", view.getMeasuredHeight()" + view.getMeasuredHeight());
+        LogUtil.e("isViewCoverRange 计算的view大小" + ((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent));
+        LogUtil.e("isViewCoverRange 显示的view大小" + (mRect.right - mRect.left) * (mRect.bottom - mRect.top));
         if (((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent) <= ((mRect.right - mRect.left) * (mRect.bottom - mRect.top))) {
-            LogUtil.e("view.getMeasuredWidth():" + view.getMeasuredWidth() + ", view.getMeasuredHeight()" + view.getMeasuredHeight());
             return true;
         }
         return false;

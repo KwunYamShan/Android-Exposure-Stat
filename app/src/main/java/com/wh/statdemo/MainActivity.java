@@ -23,30 +23,16 @@ public class MainActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         TextView tvHello = findViewById(R.id.tv_hello);
-        tvHello.setTag(App.mStatTagId,"Hello World");
-        //拦截触摸事件，验证statLayout的触摸事件是否被拦截
+        TextView tvPrice = findViewById(R.id.tv_price);
+        TextView tvBlock = findViewById(R.id.tv_block);
+        TextView tvItem = findViewById(R.id.tv_item);
 
-        tvHello.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, getString(R.string.app_name), Toast.LENGTH_SHORT).show();
-            }
-        });
-        tvHello.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.e(TAG,"tvHello");
-                return false;
-            }
-        });
-        ScrollView view = findViewById(R.id.scrollView);
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.e(TAG,"ScrollView");
-                return false;
-            }
-        });
+        //埋点
+        ReportUtil.getInstance().setReportData(tvHello,"3000块","婚纱照","BJ旅拍");
+        ReportUtil.getInstance().setPriceReport(tvPrice, tvPrice.getText().toString());
+        ReportUtil.getInstance().setBlockNameTag(tvBlock, tvBlock.getText().toString());
+        ReportUtil.getInstance().setItemNameTag(tvItem, tvItem.getText().toString());
+
     }
 
 }

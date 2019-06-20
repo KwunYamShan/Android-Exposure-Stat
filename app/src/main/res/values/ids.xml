@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="mark" type="id"/>
+    <item name="url" type="id"/>
+    <item name="img_url" type="id"/>
+    <item name="video_url" type="id"/>
+    <item name="icon_url" type="id"/>
+    <item name="title" type="id"/>
+    <item name="title2" type="id"/>
+    <item name="content" type="id"/>
+    <item name="content2" type="id"/>
+    <item name="desc" type="id"/>
+    <item name="time" type="id"/>
+    <item name="time_start" type="id"/>
+    <item name="time_end" type="id"/>
+    <item name="name" type="id"/>
+    <item name="value" type="id"/>
+    <item name="tab" type="id"/>
+    <item name="num" type="id"/>
+    <item name="price" type="id"/>
+    <item name="enter" type="id"/>
+    <item name="cancel" type="id"/>
+    <item name="next" type="id"/>
+    <item name="previous" type="id"/>
+    <item name="blockname" type="id"/>
+    <item name="itemname" type="id"/>
 </resources>

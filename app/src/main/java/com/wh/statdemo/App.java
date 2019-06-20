@@ -13,7 +13,6 @@ import java.util.Iterator;
 
 public class App extends Application implements IContext {
     private static final String TAG = App.class.getSimpleName();
-    public static int mStatTagId = R.id.mark;
 
     @Override
     public void onCreate() {
@@ -21,7 +20,7 @@ public class App extends Application implements IContext {
         //Application中初始化，Application需要实现IContext
         new StatBuilder(this)
                 //对每个需要曝光统计的View以setTag的方式进行标识，标识需自行定义
-                .setTagId(mStatTagId)
+                .setTagId(ReportUtil.getInstance().getMarkTag())
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
                 .setDuration(5000)
                 //设置可被覆盖的范围，范围：1-100  20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光的view
@@ -32,12 +31,14 @@ public class App extends Application implements IContext {
                 .setViewResultListener(new HBHStatistical.ViewResultListener() {
                     @Override
                     public void onViewResult(ArrayList<View> displayViews) {
-                        //不需要非空判断
+                        //displayViews不需要做非空判断
                         Iterator iterator = displayViews.iterator();
                         while (iterator.hasNext()) {
                             View view = (View) iterator.next();
-                            String mark = (String) view.getTag(mStatTagId);
-                            Log.e(TAG, "曝光统计：id:" + view.getId() + "     , 数据:" + mark);
+                            String block = (String)view.getTag(ReportUtil.getInstance().getBlockNameTag());
+                            String item =  (String)view.getTag(ReportUtil.getInstance().getItemNameTag());
+                            String price =  (String)view.getTag(ReportUtil.getInstance().getPriceTag());
+                            Log.e(TAG, "曝光统计：id:" + view.getId() + "     , 数据: " +block+"   "+item+"    "+price);
                         }
                     }
                 })
