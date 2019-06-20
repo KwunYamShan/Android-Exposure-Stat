@@ -6,14 +6,14 @@
   
 ## 主要特点
 1. 调用者简单的配置曝光规则，即可以拿到曝光的view集合
-2. 可设置曝光的屏幕范围
-3. 可以在view的Visible状态，并且该view与屏幕有交集时触发统计事件
-4. 可设置曝光时长，曝光多久后触发统计事件
+2. 可定义被覆盖的范围，范围：1-100  例：20代表view被覆盖或显示不全在20%以内依然可以算作是符合曝光的view
+3. 可以在view的Visible状态、view与屏幕有交集并且view并没有被完全覆盖时触发统计事件
+4. 可设置曝光延时，曝光多久后触发统计事件
 5. 统计结果在类库初始化时以回调的方式交由调用者处理
 ## 使用
 1. App下的build.gradle添加依赖类库
 ```Java
-    implementation 'com.wh.repo:Android-Exposure-Stat:1.2.1'
+    implementation 'com.wh.repo:Android-Exposure-Stat:1.3.0'
 ```
 2. Project下的build.gradle添加仓库地址
 ```Java
@@ -62,8 +62,8 @@ public class App extends Application implements IContext {
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
                  .setDuration(5000)
 
-                //设置view的可被遮挡范围
-                 .setCoverRange(20)
+                 //设置可被覆盖的范围，范围：1-100  20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光的view
+                .setCoverRange(20)
 
                 //设置是否为线上版本，目前的区别就是是否需要打日志
                  .setDebugModle(true)
