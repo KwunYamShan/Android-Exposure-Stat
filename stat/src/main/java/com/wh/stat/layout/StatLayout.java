@@ -72,15 +72,25 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     }
 
     /**
-     * 判断一个View是否包含了对应的坐标
+     * 判断一个View是否包含在屏幕中
      */
     public boolean displayView(View view) {
         StatConfig mConfig = HBHStatistical.getInstance().getConfig();
         view.getGlobalVisibleRect(mRect);
         boolean contains = mConfig.mScreenRect.contains(mRect);
         String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-        LogUtil.e("View是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",  "+mRect.left+"+"+mRect.top+"+"+mRect.right+"+"+mRect.bottom+", 数据：" + mark);
+        LogUtil.e("View是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",  " + mRect.left + "+" + mRect.top + "+" + mRect.right + "+" + mRect.bottom + ", 数据：" + mark);
         return contains;
+    }
+
+    /**
+     * 是否显示在屏幕中
+     *
+     * @param view
+     * @return
+     */
+    public boolean isViewGlobalVisible(final View view) {
+        return view.getGlobalVisibleRect(mRect);
     }
 
     /**
@@ -89,7 +99,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     public ArrayList<View> findDisplayView(View parent) {
         ArrayList<View> displayViews = new ArrayList<>();
         // 仅在parent可见，并其触发了触摸事件时才对该parent进行判断/递归查找，减少查找的次数，提高效率
-        if (isVisible(parent) && displayView(parent)) {
+        if (isVisible(parent) && isViewGlobalVisible(parent)) {
             displayViews.add(parent);
             if (parent instanceof ViewGroup) {
                 findDisplayViewsInGroup((ViewGroup) parent, displayViews);
@@ -115,17 +125,24 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
 
     /**
      * 是否在可被覆盖的范围内
+     *
      * @param view
      * @return
      */
-    public boolean isCoverView(View view) {
+    public boolean isViewCoverRange(View view) {
+        int coverRange = HBHStatistical.getInstance().getConfig().coverRange;
+        if (coverRange == 0) return true;
+
         view.getGlobalVisibleRect(mRect);
         //view的面积*可被覆盖掉的范围如果比view当前显示的面积大则为有效曝光
-        int coverRange = HBHStatistical.getInstance().getConfig().coverRange;
-        coverRange = coverRange>=0?1:coverRange;
-        coverRange = coverRange <=100?100:coverRange;
-        if((view.getMeasuredWidth() * view.getMeasuredHeight()/ coverRange) <= ((mRect.right - mRect.left) * (mRect.bottom - mRect.top)) ){
-            LogUtil.e("view.getMeasuredWidth():"+view.getMeasuredWidth()+", view.getMeasuredHeight()"+view.getMeasuredHeight());
+        coverRange = coverRange <= 0 ? 1 : coverRange;
+        coverRange = coverRange >= 100 ? 100 : coverRange;
+        float percent = (float) (100 - coverRange) / 100;
+        LogUtil.e("测量的view宽高:" + "view.getMeasuredWidth()" + view.getMeasuredWidth() + ", view.getMeasuredHeight()" + view.getMeasuredHeight());
+        LogUtil.e("计算的view大小" + ((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent));
+        LogUtil.e("显示的view大小" + (mRect.right - mRect.left) * (mRect.bottom - mRect.top));
+        if (((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent) <= ((mRect.right - mRect.left) * (mRect.bottom - mRect.top))) {
+            LogUtil.e("view.getMeasuredWidth():" + view.getMeasuredWidth() + ", view.getMeasuredHeight()" + view.getMeasuredHeight());
             return true;
         }
         return false;
@@ -142,7 +159,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
             ArrayList<View> displayChildren = findDisplayView(child);
             if (!displayChildren.isEmpty()) {
                 displayViews.addAll(displayChildren);
-            } else if (isVisible(child) && displayView(child)) {
+            } else if (isVisible(child) && isViewGlobalVisible(child)) {
                 displayViews.add(child);
             }
         }

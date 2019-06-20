@@ -24,8 +24,8 @@ public class App extends Application implements IContext {
                 .setTagId(mStatTagId)
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
                 .setDuration(5000)
-                //设置曝光的屏幕范围
-                //.setSubRange(0,0,screenWidth,screenHeight)
+                //设置可被覆盖的范围，范围：1-100  20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光的view
+                .setCoverRange(20)
                 //设置是否为线上版本，目前的区别就是是否需要打日志
                 .setDebugModle(true)
                 //返回已曝光的view集合

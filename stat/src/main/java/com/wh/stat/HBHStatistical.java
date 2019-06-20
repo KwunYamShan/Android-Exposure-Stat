@@ -189,7 +189,7 @@ public class HBHStatistical {
             while (iterator.hasNext()) {
                 View view = (View) iterator.next();
                 int id = view.getId();
-                if (isNeedReport(view) && statLayout.isCoverView(view)) {
+                if (isNeedReport(view) && statLayout.isViewCoverRange(view)) {
                     list.add(view);
                     String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
                     LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
