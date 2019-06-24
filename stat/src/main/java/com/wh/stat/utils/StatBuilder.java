@@ -41,69 +41,6 @@ public class StatBuilder {
         return this;
     }
 
-//    /**
-//     * 设置曝光的屏幕范围
-//     */
-//    public StatBuilder setSubRange(int left, int top, int right, int bottom) {
-//        mConfig.top = top;
-//        mConfig.left = left;
-//        mConfig.right = right;
-//        mConfig.bottom = bottom;
-//        return this;
-//    }
-//
-//    /**
-//     * 设置曝光的屏幕范围
-//     */
-//    public StatBuilder setStatRange(Rect screenRange) {
-//        mConfig.mScreenRect = screenRange;
-//        return this;
-//    }
-//
-//    /**
-//     * 设置曝光的屏幕范围，
-//     *
-//     * @param top 减去上方不需要曝光的高度
-//     * @return
-//     */
-//    public StatBuilder setSubTop(int top) {
-//        mConfig.top = top;
-//        return this;
-//    }
-//
-//    /**
-//     * 设置曝光的屏幕范围，
-//     *
-//     * @param bottom 减去下方不需要曝光的高度
-//     * @return
-//     */
-//    public StatBuilder setSubBottom(int bottom) {
-//        mConfig.bottom = bottom;
-//        return this;
-//    }
-//
-//    /**
-//     * 设置曝光的屏幕范围，
-//     *
-//     * @param left 减去左面不需要曝光的高度
-//     * @return
-//     */
-//    public StatBuilder setSubLeft(int left) {
-//        mConfig.left = left;
-//        return this;
-//    }
-//
-//    /**
-//     * 设置曝光的屏幕范围，
-//     *
-//     * @param right 减去右面不需要曝光的高度
-//     * @return
-//     */
-//    public StatBuilder setSubrRight(int right) {
-//        mConfig.right = right;
-//        return this;
-//    }
-
     /**
      * 设置时长
      *
@@ -124,12 +61,23 @@ public class StatBuilder {
         HBHStatistical.getInstance().setViewResultListener(viewResultListener);
         return this;
     }
+
     /**
      * 设置view的可被遮挡范围
+     *
      * @param range 1~100
      */
     public StatBuilder setCoverRange(int range) {
         mConfig.coverRange = range;
+        return this;
+    }
+
+    /**
+     * 设置是否需要自动曝光
+     * 自动曝光：打开了页面但用户未执行其他任何操作情况下执行延时曝光任务
+     */
+    public StatBuilder setAutoStat(boolean isAuto) {
+        mConfig.isAuto = isAuto;
         return this;
     }
 
@@ -140,9 +88,7 @@ public class StatBuilder {
         HBHStatistical.getInstance().initialize(mConfig);
     }
 
-
-
     /**
-     * 上报之后是否需要再次上报
+     * 上报去重
      */
 }

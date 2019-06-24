@@ -57,8 +57,7 @@ public class HBHStatistical {
         WindowManager wm = (WindowManager) mConfig.context.getSystemService(WINDOW_SERVICE);
         wm.getDefaultDisplay().getRealMetrics(metrics);
         if (mConfig.mScreenRect == null) {
-            //mConfig.mScreenRect = new Rect(0 + mConfig.left, 0 + mConfig.top, metrics.widthPixels - mConfig.right, metrics.heightPixels - mConfig.bottom);
-            mConfig.mScreenRect = new Rect(0 , 0 , metrics.widthPixels, metrics.heightPixels );
+            mConfig.mScreenRect = new Rect(0, 0, metrics.widthPixels, metrics.heightPixels);
         }
     }
 
@@ -77,24 +76,28 @@ public class HBHStatistical {
      */
     public void bind(Activity activity) {
         mRootView = activity.getWindow().getDecorView().getRootView();
-        /**
-         * 当前窗体得到或失去焦点的时候的时候调用，这是这个活动是否是用户可见的最好的标志
-         * 当按下home键、弹窗弹出、被其他页面遮盖住时或者退出app时hasFocus为false，
-         * 当home键返回到主页面时、页面被启动、弹出框消失、覆盖页消失时hasFocus为true
-         */
-        mRootView.getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
-            @Override
-            public void onWindowFocusChanged(boolean hasFocus) {
-                LogUtil.e("onWindowFocusChanged:" + hasFocus);
-                if (hasFocus) {
-                    HBHStatistical.getInstance().delayed();
-                } else {
-                    HBHStatistical.getInstance().cancel();
-                    //页面层叠的情况remove会出问题
-                    //mRootView.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
+
+        if (mConfig.isAuto) {
+            /**
+             * 当前窗体得到或失去焦点的时候的时候调用，这是这个活动是否是用户可见的最好的标志
+             * 当按下home键、弹窗弹出、被其他页面遮盖住时或者退出app时hasFocus为false，
+             * 当home键返回到主页面时、页面被启动、弹出框消失、覆盖页消失时hasFocus为true
+             */
+            mRootView.getViewTreeObserver().addOnWindowFocusChangeListener(new ViewTreeObserver.OnWindowFocusChangeListener() {
+                @Override
+                public void onWindowFocusChanged(boolean hasFocus) {
+                    LogUtil.e("onWindowFocusChanged:" + hasFocus);
+                    if (hasFocus) {
+                        HBHStatistical.getInstance().delayed();
+                    }
+//                else {
+//                    HBHStatistical.getInstance().cancel();
+//                    //页面层叠的情况remove会出问题
+//                    //mRootView.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
+//                }
                 }
-            }
-        });
+            });
+        }
         /**
          * 当View树绑定到window上的时候回调OnWindowAttachListener的onWindowAttached() 函数，
          * 当它从window上解绑时调用OnWindowAttachListener的onWindowDetached()
@@ -178,7 +181,16 @@ public class HBHStatistical {
     }
 
     /**
-     *  洗数据，返回结果
+     * 解绑当前显示的视图
+     *
+     * @param activity
+     */
+    public void unBind(Activity activity){
+        View rootView = activity.getWindow().getDecorView().getRootView();
+    }
+
+    /**
+     * 洗数据，返回结果
      */
     public void report() {
         StatLayout statLayout = findCurrentStatLayout();

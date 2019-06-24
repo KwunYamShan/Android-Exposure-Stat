@@ -13,7 +13,7 @@
 ## 使用
 1. App下的build.gradle添加依赖类库
 ```Java
-    implementation 'com.wh.repo:Android-Exposure-Stat:1.3.0'
+    implementation 'com.wh.repo:Android-Exposure-Stat:1.3.1'
 ```
 2. Project下的build.gradle添加仓库地址
 ```Java
@@ -23,6 +23,7 @@ buildscript {
         ...
     }
     dependencies {
+        //gradle版本与相应插件版本的对应关系 3.4.0+ - 5.1.1+
         classpath 'com.android.tools.build:gradle:3.4.1'
         
         // NOTE: Do not place your application dependencies here; they belong

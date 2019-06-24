@@ -72,7 +72,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     }
 
     /**
-     * 判断一个View是否包含在屏幕中
+     * 判断一个View是否包含在屏幕范围内
      */
     public boolean displayView(View view) {
         StatConfig mConfig = HBHStatistical.getInstance().getConfig();
@@ -226,7 +226,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
 
     private void wrapOnTouch(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            Object viewInfo = null;
+            Object viewInfo ;
             Field touchInfo = null;
             try {
                 viewInfo = getListenerInfoField().get(view);
