@@ -11,6 +11,11 @@ import com.wh.stat.lifecycle.IContext;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * @author KwunYamShan.
+ * @time 2019/6/25.
+ * @explain
+ */
 public class App extends Application implements IContext {
     private static final String TAG = App.class.getSimpleName();
 
@@ -23,10 +28,14 @@ public class App extends Application implements IContext {
                 .setTagId(ReportUtil.getInstance().getMarkTag())
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
                 .setDuration(5000)
-                //设置可被覆盖的范围，范围：1-100  20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光的view
+                //设置可被覆盖的范围，范围：0-100  20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光的view
                 .setCoverRange(20)
                 //设置是否为线上版本，目前的区别就是是否需要打日志
                 .setDebugModle(true)
+                //是否需要自动执行曝光任务
+                .setAutoStat(true)
+                //是否可以被重复曝光
+                .setRepeat(true)
                 //返回已曝光的view集合
                 .setViewResultListener(new HBHStatistical.ViewResultListener() {
                     @Override
@@ -35,10 +44,10 @@ public class App extends Application implements IContext {
                         Iterator iterator = displayViews.iterator();
                         while (iterator.hasNext()) {
                             View view = (View) iterator.next();
-                            String block = (String)view.getTag(ReportUtil.getInstance().getBlockNameTag());
-                            String item =  (String)view.getTag(ReportUtil.getInstance().getItemNameTag());
-                            String price =  (String)view.getTag(ReportUtil.getInstance().getPriceTag());
-                            Log.e(TAG, "曝光统计：id:" + view.getId() + "     , 数据: " +block+"   "+item+"    "+price);
+                            String block = (String) view.getTag(ReportUtil.getInstance().getBlockNameTag());
+                            String item = (String) view.getTag(ReportUtil.getInstance().getItemNameTag());
+                            String price = (String) view.getTag(ReportUtil.getInstance().getPriceTag());
+                            Log.e(TAG, "曝光统计：id:" + view.getId() + "     , 数据: " + block + "   " + item + "    " + price);
                         }
                     }
                 })

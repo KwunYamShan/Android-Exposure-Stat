@@ -1,12 +1,11 @@
 package com.wh.stat.utils;
 
 import android.content.Context;
-import android.graphics.Rect;
 
 import com.wh.stat.HBHStatistical;
 
 /**
- * @author wh.
+ * @author KwunYamShan.
  * @time 2019/6/14.
  * @explain 构建类
  */
@@ -16,7 +15,7 @@ public class StatBuilder {
 
     public StatBuilder(Context context) {
         mConfig = new StatConfig();
-        mConfig.context = context;
+        mConfig.setContext(context);
     }
 
     /**
@@ -25,29 +24,31 @@ public class StatBuilder {
      * <resources>
      * <item name="tag_id" type="id"/>
      * </resources>
+     * <p>
+     * 调用：setTagId(R.id.tag_id);
      */
     public StatBuilder setTagId(int id) {
-        mConfig.tagId = id;
+        mConfig.setTagId(id);
         return this;
     }
 
     /**
      * 设置是否为线上版本
      *
-     * @param debugModel
+     * @param debugModel true为debug模式， false为线上模式
      */
     public StatBuilder setDebugModle(boolean debugModel) {
-        mConfig.debugModel = debugModel;
+        mConfig.setDebugModel(debugModel);
         return this;
     }
 
     /**
-     * 设置时长
+     * 设置延时曝光的时长
      *
-     * @param millisecond view显示millisecond毫秒后算一次有效曝光
+     * @param millisecond view显示millisecond毫秒后并且用户没有主动操作时才算一次有效曝光
      */
     public StatBuilder setDuration(long millisecond) {
-        mConfig.delayTime = millisecond;
+        mConfig.setDelayTime(millisecond);
         return this;
     }
 
@@ -63,21 +64,33 @@ public class StatBuilder {
     }
 
     /**
-     * 设置view的可被遮挡范围
+     * 设置需曝光的view可被遮挡范围
      *
-     * @param range 1~100
+     * @param range 范围：0-100  例：20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光。默认值：0 表示view不可被覆盖
      */
     public StatBuilder setCoverRange(int range) {
-        mConfig.coverRange = range;
+        mConfig.setCoverRange(range);
         return this;
     }
 
     /**
      * 设置是否需要自动曝光
-     * 自动曝光：打开了页面但用户未执行其他任何操作情况下执行延时曝光任务
+     * （自动曝光：打开了页面但用户未执行其他任何操作情况下会自动执行一次延时曝光任务）
+     *
+     * @param isAuto isAuto为true时自动延时曝光。 isAuto为false表示当有用户操作时才会执行延时曝光
      */
     public StatBuilder setAutoStat(boolean isAuto) {
-        mConfig.isAuto = isAuto;
+        mConfig.setAuto(isAuto);
+        return this;
+    }
+
+    /**
+     * 曝光去重（是否可以重复曝光）
+     *
+     * @param isRepeat isRepeat为true时表示每当有用户操作后都会执行延时曝光的命令。isRepeat为false表示曝光过一次后在view所在的Activity生命周期结束之前不会被再次曝光
+     */
+    public StatBuilder setRepeat(boolean isRepeat) {
+        mConfig.setRepeat(isRepeat);
         return this;
     }
 
@@ -88,7 +101,4 @@ public class StatBuilder {
         HBHStatistical.getInstance().initialize(mConfig);
     }
 
-    /**
-     * 上报去重
-     */
 }

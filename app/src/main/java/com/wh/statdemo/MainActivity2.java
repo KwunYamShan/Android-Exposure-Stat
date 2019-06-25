@@ -1,9 +1,7 @@
 package com.wh.statdemo;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 /**
@@ -11,7 +9,7 @@ import android.widget.TextView;
  * @time 2019/6/25.
  * @explain
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = AppCompatActivity.class.getSimpleName();
 
     @Override
@@ -23,13 +21,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+
         TextView tvHello = findViewById(R.id.tv_hello);
-        tvHello.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, MainActivity2.class));
-            }
-        });
         TextView tvPrice = findViewById(R.id.tv_price);
         TextView tvBlock = findViewById(R.id.tv_block);
         TextView tvItem = findViewById(R.id.tv_item);

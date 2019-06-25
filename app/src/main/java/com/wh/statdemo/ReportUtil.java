@@ -2,6 +2,11 @@ package com.wh.statdemo;
 
 import android.view.View;
 
+/**
+ * @author KwunYamShan.
+ * @time 2019/6/25.
+ * @explain
+ */
 public class ReportUtil {
 
     private static class HelperHolder {
@@ -24,7 +29,7 @@ public class ReportUtil {
         return R.id.price;
     }
 
-    public  void setPriceReport(View view, String msg) {
+    public void setPriceReport(View view, String msg) {
         setMarkTag(view);
         view.setTag(getPriceTag(), msg);
     }
@@ -34,7 +39,7 @@ public class ReportUtil {
     }
 
     public void setBlockNameTag(View view, String msg) {
-        setMarkTag( view);
+        setMarkTag(view);
         view.setTag(getBlockNameTag(), msg);
     }
 
@@ -43,12 +48,12 @@ public class ReportUtil {
     }
 
     public void setItemNameTag(View view, String msg) {
-        setMarkTag( view);
+        setMarkTag(view);
         view.setTag(getItemNameTag(), msg);
     }
 
     public void setReportData(View view, String price, String blockname, String itemName) {
-        setMarkTag( view);
+        setMarkTag(view);
         view.setTag(getPriceTag(), price);
         view.setTag(getBlockNameTag(), blockname);
         view.setTag(getItemNameTag(), itemName);

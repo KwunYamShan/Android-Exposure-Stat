@@ -13,7 +13,7 @@
 ## 使用
 1. App下的build.gradle添加依赖类库
 ```Java
-    implementation 'com.wh.repo:Android-Exposure-Stat:1.3.1'
+    implementation 'com.wh.repo:Android-Exposure-Stat:1.3.2'
 ```
 2. Project下的build.gradle添加仓库地址
 ```Java

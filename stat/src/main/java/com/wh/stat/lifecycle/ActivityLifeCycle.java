@@ -8,7 +8,7 @@ import com.wh.stat.HBHStatistical;
 import com.wh.stat.layout.LayoutManager;
 
 /**
- * @author wh.
+ * @author KwunYamShan.
  * @time 2019/6/6.
  * @explain 该类用于监听项目中所有Activity的生命周期<p />
  * 需要在[Application]中初始化，以便于能够及时监听所有的[Activity]

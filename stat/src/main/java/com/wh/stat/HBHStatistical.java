@@ -23,7 +23,7 @@ import java.util.Iterator;
 import static android.content.Context.WINDOW_SERVICE;
 
 /**
- * @author wh.
+ * @author KwunYamShan.
  * @time 2019/6/14.
  * @explain
  */
@@ -42,27 +42,34 @@ public class HBHStatistical {
     }
 
     public void initialize(StatConfig config) {
+        if (config == null) {
+            throw new NullPointerException("请使用StatBuilder构建类进行初始化");
+        }
         mConfig = config;
-        if (mConfig.tagId == 0) {
+        if (mConfig.getTagId() == 0) {
             throw new NullPointerException("StatBuilder在构建时需要初始化ID：setTagId(R.id.xxx)");
         }
         ActivityLifeCycle mActivityLifeCycle = new ActivityLifeCycle();
-        if (mConfig.context instanceof IContext) {
-            ((IContext) mConfig.context).registerActivityLifecycleCallbacks(mActivityLifeCycle);
+        if (mConfig.getContext() instanceof IContext) {
+            ((IContext) mConfig.getContext()).registerActivityLifecycleCallbacks(mActivityLifeCycle);
         } else {
             throw new ClassCastException("Application没有实现IContext接口");
         }
 
         DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) mConfig.context.getSystemService(WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) mConfig.getContext().getSystemService(WINDOW_SERVICE);
         wm.getDefaultDisplay().getRealMetrics(metrics);
-        if (mConfig.mScreenRect == null) {
-            mConfig.mScreenRect = new Rect(0, 0, metrics.widthPixels, metrics.heightPixels);
+        if (mConfig.getScreenRect() == null) {
+            mConfig.setScreenRect(new Rect(0, 0, metrics.widthPixels, metrics.heightPixels));
         }
     }
 
     public int getTagId() {
-        return mConfig.tagId;
+        return mConfig.getTagId();
+    }
+
+    public int getUnMarkId() {
+        return mConfig.unMarkId;
     }
 
     public StatConfig getConfig() {
@@ -77,7 +84,7 @@ public class HBHStatistical {
     public void bind(Activity activity) {
         mRootView = activity.getWindow().getDecorView().getRootView();
 
-        if (mConfig.isAuto) {
+        if (mConfig.isAuto()) {
             /**
              * 当前窗体得到或失去焦点的时候的时候调用，这是这个活动是否是用户可见的最好的标志
              * 当按下home键、弹窗弹出、被其他页面遮盖住时或者退出app时hasFocus为false，
@@ -181,15 +188,6 @@ public class HBHStatistical {
     }
 
     /**
-     * 解绑当前显示的视图
-     *
-     * @param activity
-     */
-    public void unBind(Activity activity){
-        View rootView = activity.getWindow().getDecorView().getRootView();
-    }
-
-    /**
      * 洗数据，返回结果
      */
     public void report() {
@@ -201,10 +199,21 @@ public class HBHStatistical {
             while (iterator.hasNext()) {
                 View view = (View) iterator.next();
                 int id = view.getId();
+                String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
                 if (isNeedReport(view) && statLayout.isViewCoverRange(view)) {
-                    list.add(view);
-                    String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
-                    LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
+                    if (isRepeat()) {
+                        list.add(view);
+                        LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
+                    } else {
+                        String unMarkTag = (String) view.getTag(getUnMarkId());
+                        if (unMarkTag == null) {
+                            list.add(view);
+                            view.setTag(getUnMarkId(), "msg");
+                            LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
+                        } else {
+                            LogUtil.e("非上报：id:" + id);
+                        }
+                    }
                 } else {
                     LogUtil.e("非上报：id:" + id);
                 }
@@ -215,6 +224,10 @@ public class HBHStatistical {
                 }
             }
         }
+    }
+
+    private boolean isRepeat() {
+        return mConfig.isRepeat();
     }
 
     public interface ViewResultListener {
@@ -232,7 +245,7 @@ public class HBHStatistical {
      */
     public void delayed() {
         cancel();
-        handler.sendEmptyMessageDelayed(StatConfig.REPORT_DELAYED, mConfig.delayTime);
+        handler.sendEmptyMessageDelayed(StatConfig.REPORT_DELAYED, mConfig.getDelayTime());
     }
 
     /**
@@ -269,7 +282,7 @@ public class HBHStatistical {
     }
 
     /**
-     * 判断是否要被上报
+     * 判断当前view是否需要曝光
      *
      * @param view
      * @return

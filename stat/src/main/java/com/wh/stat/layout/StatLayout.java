@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * @author wh.
+ * @author KwunYamShan.
  * @time 2019/6/14.
  * @explain
  */
@@ -77,7 +77,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     public boolean displayView(View view) {
         StatConfig mConfig = HBHStatistical.getInstance().getConfig();
         view.getGlobalVisibleRect(mRect);
-        boolean contains = mConfig.mScreenRect.contains(mRect);
+        boolean contains = mConfig.getScreenRect().contains(mRect);
         String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
         LogUtil.e("displayView 是否包含在屏幕中:" + contains + ",  id:" + view.getId() + ",  " + mRect.left + "+" + mRect.top + "+" + mRect.right + "+" + mRect.bottom + ", 数据：" + mark);
         return contains;
@@ -130,7 +130,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
      * @return
      */
     public boolean isViewCoverRange(View view) {
-        int coverRange = HBHStatistical.getInstance().getConfig().coverRange;
+        int coverRange = HBHStatistical.getInstance().getConfig().getCoverRange();
         if (coverRange == 0) return true;
 
         view.getGlobalVisibleRect(mRect);

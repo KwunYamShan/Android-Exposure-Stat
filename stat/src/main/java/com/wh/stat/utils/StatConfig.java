@@ -3,27 +3,95 @@ package com.wh.stat.utils;
 import android.content.Context;
 import android.graphics.Rect;
 
+import com.wh.stat.R;
+
 /**
- * @author wh.
+ * @author KwunYamShan.
  * @time 2019/6/14.
  * @explain 配置类
  */
 public class StatConfig {
     //constant
     public static final int REPORT_DELAYED = 1;
+    public int unMarkId = R.id.unmark;
 
-    public Context context;
-    //用来标记需要曝光的view
-    public int tagId;
+    private Context context;
     //屏幕宽高的矩形
-    public Rect mScreenRect;
+    private Rect mScreenRect;
+    //用来标记需要曝光的view
+    private int tagId;
+    //view可被覆盖的范围，0-100
+    private int coverRange;
     //曝光延时的时间
-    public long delayTime = 5000;
+    private long delayTime = 5000;
     //模式
-    public boolean debugModel;
+    private boolean debugModel;
     //是否需要自动曝光
-    public boolean isAuto;
-    //view可被覆盖的范围，1-100
-    public int coverRange;
+    private boolean isAuto;
+    //是否需要重复上报
+    private boolean isRepeat;
 
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public Rect getScreenRect() {
+        return mScreenRect;
+    }
+
+    public void setScreenRect(Rect screenRect) {
+        this.mScreenRect = screenRect;
+    }
+
+    public int getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(int tagId) {
+        this.tagId = tagId;
+    }
+
+    public int getCoverRange() {
+        return coverRange;
+    }
+
+    public void setCoverRange(int coverRange) {
+        this.coverRange = coverRange;
+    }
+
+    public long getDelayTime() {
+        return delayTime;
+    }
+
+    public void setDelayTime(long delayTime) {
+        this.delayTime = delayTime;
+    }
+
+    public boolean isDebugModel() {
+        return debugModel;
+    }
+
+    public void setDebugModel(boolean debugModel) {
+        this.debugModel = debugModel;
+    }
+
+    public boolean isAuto() {
+        return isAuto;
+    }
+
+    public void setAuto(boolean auto) {
+        isAuto = auto;
+    }
+
+    public boolean isRepeat() {
+        return isRepeat;
+    }
+
+    public void setRepeat(boolean repeat) {
+        isRepeat = repeat;
+    }
 }

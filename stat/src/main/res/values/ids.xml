@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="mark" type="id"/>
+    <item name="unmark" type="id"/>
     <item name="url" type="id"/>
     <item name="img_url" type="id"/>
     <item name="video_url" type="id"/>
