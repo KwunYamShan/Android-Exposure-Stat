@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author KwunYamShan.
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         tvHello.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, MainActivity2.class));
+                Toast.makeText(MainActivity.this, "Hello", Toast.LENGTH_SHORT).show();
             }
         });
         TextView tvPrice = findViewById(R.id.tv_price);
