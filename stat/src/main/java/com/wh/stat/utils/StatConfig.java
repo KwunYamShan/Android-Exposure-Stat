@@ -12,8 +12,10 @@ import com.wh.stat.R;
  */
 public class StatConfig {
     //constant
-    public static final int REPORT_DELAYED = 1;
+    public static final int HANDLER_REPORT_DELAYED = 1;
+    public static final int HANDLER_SCROLL_DELAYED = 2;
     public int unMarkId = R.id.unmark;
+    public long scrollTime = 100;
 
     private Context context;
     //屏幕宽高的矩形

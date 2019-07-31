@@ -62,7 +62,11 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
-            HBHStatistical.getInstance().delayed();
+            HBHStatistical.getInstance().scrollDelayed();
+            LogUtil.e("onTouch:ACTION_UP:"+event.getAction());
+        }else if(event.getAction() == MotionEvent.ACTION_MOVE){
+            HBHStatistical.getInstance().cancel();
+            LogUtil.e("onTouch:ACTION_MOVE:"+event.getAction());
         }
         return false;
     }
@@ -257,11 +261,11 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
         Object touch;
         try {
             touch = touchInfo != null ? touchInfo.get(viewInfo) : null;
-            if (!(touch instanceof View.OnTouchListener)) {
+            if (!(touch instanceof OnTouchListener)) {
                 touch = null;
             }
 
-            View.OnTouchListener source = (View.OnTouchListener) touch;
+            OnTouchListener source = (OnTouchListener) touch;
             if (source != null) {
                 // 如果source已经是TouchWrapper则不需继续处理
                 if (!(source instanceof TouchWrapper)) {
@@ -294,11 +298,11 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     /**
      * [View.OnTouchListener]的包装类，内部包装了View的原[View.OnTouchListener]，增加曝光的事件统计
      */
-    public class TouchWrapper implements View.OnTouchListener {
+    public class TouchWrapper implements OnTouchListener {
 
-        public View.OnTouchListener source;
+        public OnTouchListener source;
 
-        public TouchWrapper(View.OnTouchListener source) {
+        public TouchWrapper(OnTouchListener source) {
             this.source = source;
         }
 
@@ -308,7 +312,12 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
                 source.onTouch(v, event);
             }
             if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
-                HBHStatistical.getInstance().delayed();
+                //HBHStatistical.getInstance().reportDelayed();
+                HBHStatistical.getInstance().scrollDelayed();
+                LogUtil.e("onTouch:ACTION_UP:"+event.getAction());
+            }else if(event.getAction() == MotionEvent.ACTION_MOVE){
+                HBHStatistical.getInstance().cancel();
+                LogUtil.e("onTouch:ACTION_MOVE:"+event.getAction());
             }
             return false;
         }

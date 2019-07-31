@@ -33,6 +33,8 @@ public class HBHStatistical {
 
     private StatConfig mConfig;
 
+    public boolean isScroll ;
+
     private static class HelperHolder {
         public static final HBHStatistical mStatistical = new HBHStatistical();
     }
@@ -83,7 +85,6 @@ public class HBHStatistical {
      */
     public void bind(Activity activity) {
         mRootView = activity.getWindow().getDecorView().getRootView();
-
         if (mConfig.isAuto()) {
             /**
              * 当前窗体得到或失去焦点的时候的时候调用，这是这个活动是否是用户可见的最好的标志
@@ -95,10 +96,10 @@ public class HBHStatistical {
                 public void onWindowFocusChanged(boolean hasFocus) {
                     LogUtil.e("onWindowFocusChanged:" + hasFocus);
                     if (hasFocus) {
-                        HBHStatistical.getInstance().delayed();
+                        reportDelayed();
                     }
 //                else {
-//                    HBHStatistical.getInstance().cancel();
+//                    cancel();
 //                    //页面层叠的情况remove会出问题
 //                    //mRootView.getViewTreeObserver().removeOnWindowFocusChangeListener(this);
 //                }
@@ -113,13 +114,13 @@ public class HBHStatistical {
 //            @Override
 //            public void onWindowAttached() {
 //                LogUtil.e("addOnWindowAttachListener:onWindowAttached");
-//                //HBHStatistical.getInstance().delayed();
+//                //reportDelayed();
 //            }
 //
 //            @Override
 //            public void onWindowDetached() {
 //                LogUtil.e("addOnWindowAttachListener:onWindowDetached");
-//                //HBHStatistical.getInstance().cancel();
+//                //cancel();
 //            }
 //        });
 
@@ -136,12 +137,15 @@ public class HBHStatistical {
         /**
          * 当一个视图发生滚动时调用OnScrollChangedListener的onScrollChanged()函数
          */
-//        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//            @Override
-//            public void onScrollChanged() {
-//                LogUtil.e( "addOnScrollChangedListener");
-//            }
-//        });
+        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                LogUtil.e( "addOnScrollChangedListener");
+                if(isScroll){
+                    scrollDelayed();
+                }
+            }
+        });
 //        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
 //            public void onGlobalLayout() {
@@ -178,9 +182,9 @@ public class HBHStatistical {
 //            @Override
 //            public boolean onTouch(View v, MotionEvent event) {
 //                if (event.getAction() == MotionEvent.ACTION_UP){
-//                    HBHStatistical.getInstance().delayed();
+//                    reportDelayed();
 //                }else if (event.getAction() == MotionEvent.ACTION_MOVE || event.getAction() == MotionEvent.ACTION_DOWN){
-//                    HBHStatistical.getInstance().cancel();
+//                    cancel();
 //                }
 //                return false;
 //            }
@@ -199,7 +203,7 @@ public class HBHStatistical {
             while (iterator.hasNext()) {
                 View view = (View) iterator.next();
                 int id = view.getId();
-                String mark = (String) view.getTag(HBHStatistical.getInstance().getTagId());
+                String mark = (String) view.getTag(getTagId());
                 if (isNeedReport(view) && statLayout.isViewCoverRange(view)) {
                     if (isRepeat()) {
                         list.add(view);
@@ -241,17 +245,27 @@ public class HBHStatistical {
     }
 
     /**
-     * 计算
+     * 延时上报
      */
-    public void delayed() {
+    public void reportDelayed() {
         cancel();
-        handler.sendEmptyMessageDelayed(StatConfig.REPORT_DELAYED, mConfig.getDelayTime());
+        isScroll = false;
+        handler.sendEmptyMessageDelayed(StatConfig.HANDLER_REPORT_DELAYED, mConfig.getDelayTime());
+    }
+    /**
+     * 判断滚动停止
+     */
+    public void scrollDelayed() {
+        cancel();
+        isScroll = true;
+        handler.sendEmptyMessageDelayed(StatConfig.HANDLER_SCROLL_DELAYED, mConfig.scrollTime);
     }
 
     /**
      * 取消上报
      */
     public void cancel() {
+        isScroll = false;
         handler.removeCallbacksAndMessages(null);
     }
 
@@ -260,8 +274,12 @@ public class HBHStatistical {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == StatConfig.REPORT_DELAYED) {
-                HBHStatistical.getInstance().report();
+            if (msg.what == StatConfig.HANDLER_REPORT_DELAYED) {
+                report();
+            }
+            //表示滚动停止
+            else if (msg.what == StatConfig.HANDLER_SCROLL_DELAYED){
+                reportDelayed();
             }
         }
     };
