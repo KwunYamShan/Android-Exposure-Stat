@@ -3,6 +3,7 @@ package com.wh.statdemo;
 import android.app.Application;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.wh.stat.HBHStatistical;
 import com.wh.stat.utils.StatBuilder;
@@ -48,6 +49,7 @@ public class App extends Application implements IContext {
                             String item = (String) view.getTag(ReportUtil.getInstance().getItemNameTag());
                             String price = (String) view.getTag(ReportUtil.getInstance().getPriceTag());
                             Log.e(TAG, "曝光统计：id:" + view.getId() + "     , 数据: " + block + "   " + item + "    " + price);
+                            Toast.makeText(App.this, "曝光事件被触发，在控制台搜索“曝光统计”查看log", Toast.LENGTH_SHORT).show();
                         }
                     }
                 })
