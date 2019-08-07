@@ -33,7 +33,7 @@ public class HBHStatistical {
 
     private StatConfig mConfig;
 
-    public boolean isScroll ;
+    public boolean isScroll;
 
     private static class HelperHolder {
         public static final HBHStatistical mStatistical = new HBHStatistical();
@@ -106,6 +106,19 @@ public class HBHStatistical {
                 }
             });
         }
+
+        /**
+         * 当一个视图发生滚动时调用OnScrollChangedListener的onScrollChanged()函数
+         */
+        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                LogUtil.e("addOnScrollChangedListener");
+                if (isScroll) {
+                    scrollDelayed();
+                }
+            }
+        });
         /**
          * 当View树绑定到window上的时候回调OnWindowAttachListener的onWindowAttached() 函数，
          * 当它从window上解绑时调用OnWindowAttachListener的onWindowDetached()
@@ -134,18 +147,6 @@ public class HBHStatistical {
 //            }
 //        });
 
-        /**
-         * 当一个视图发生滚动时调用OnScrollChangedListener的onScrollChanged()函数
-         */
-        mRootView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                LogUtil.e( "addOnScrollChangedListener");
-                if(isScroll){
-                    scrollDelayed();
-                }
-            }
-        });
 //        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            @Override
 //            public void onGlobalLayout() {
@@ -204,7 +205,7 @@ public class HBHStatistical {
                 View view = (View) iterator.next();
                 int id = view.getId();
                 String mark = (String) view.getTag(getTagId());
-                if (isNeedReport(view) && statLayout.isViewCoverRange(view)) {
+                if (isNeedReport(view) && statLayout.isViewValidRange(view)) {
                     if (isRepeat()) {
                         list.add(view);
                         LogUtil.e("需上报：id:" + id + "     , 数据:" + mark);
@@ -252,6 +253,7 @@ public class HBHStatistical {
         isScroll = false;
         handler.sendEmptyMessageDelayed(StatConfig.HANDLER_REPORT_DELAYED, mConfig.getDelayTime());
     }
+
     /**
      * 判断滚动停止
      */
@@ -278,7 +280,7 @@ public class HBHStatistical {
                 report();
             }
             //表示滚动停止
-            else if (msg.what == StatConfig.HANDLER_SCROLL_DELAYED){
+            else if (msg.what == StatConfig.HANDLER_SCROLL_DELAYED) {
                 reportDelayed();
             }
         }

@@ -63,10 +63,10 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
             HBHStatistical.getInstance().scrollDelayed();
-            LogUtil.e("onTouch:ACTION_UP:"+event.getAction());
-        }else if(event.getAction() == MotionEvent.ACTION_MOVE){
+            LogUtil.e("onTouch MotionEvent:" + (event.getAction() == MotionEvent.ACTION_UP ? "ACTION_UP" : "ACTION_CANCEL"));
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             HBHStatistical.getInstance().cancel();
-            LogUtil.e("onTouch:ACTION_MOVE:"+event.getAction());
+            LogUtil.e("onTouch MotionEvent:" + "ACTION_MOVE");
         }
         return false;
     }
@@ -88,7 +88,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     }
 
     /**
-     * 是否显示在屏幕中
+     * 获取视图在屏幕坐标中是否可见
      *
      * @param view
      * @return
@@ -113,38 +113,20 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
     }
 
     /**
-     * 是否为显示完整的view
+     * 判断view显示面积的是否符合有效曝光的条件
      *
      * @param view
      * @return
      */
-    public boolean isCompleteView(View view) {
-        view.getGlobalVisibleRect(mRect);
-        LogUtil.e("isCompleteView viewId:" + view.getId() + "，实际宽:" + view.getMeasuredWidth() + "，显示宽：" + (mRect.right - mRect.left) + ",实际高：" + view.getMeasuredHeight() + "，显示高：" + (mRect.bottom - mRect.top));
-        if (view.getMeasuredWidth() <= (mRect.right - mRect.left) && view.getMeasuredHeight() <= (mRect.bottom - mRect.top)) {
+    public boolean isViewValidRange(View view) {
+        int validRange = HBHStatistical.getInstance().getConfig().getValidRange();
+        if (validRange == 0) {
             return true;
         }
-        return false;
-    }
-
-    /**
-     * 是否在可被覆盖的范围内
-     *
-     * @param view
-     * @return
-     */
-    public boolean isViewCoverRange(View view) {
-        int coverRange = HBHStatistical.getInstance().getConfig().getCoverRange();
-        if (coverRange == 0) return true;
-
         view.getGlobalVisibleRect(mRect);
-        //view的面积*可被覆盖掉的范围如果比view当前显示的面积大则为有效曝光
-        coverRange = coverRange <= 0 ? 1 : coverRange;
-        coverRange = coverRange >= 100 ? 100 : coverRange;
-        float percent = (float) (100 - coverRange) / 100;
-        LogUtil.e("isViewCoverRange 测量的view宽高:" + "view.getMeasuredWidth()" + view.getMeasuredWidth() + ", view.getMeasuredHeight()" + view.getMeasuredHeight());
-        LogUtil.e("isViewCoverRange 计算的view大小" + ((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent));
-        LogUtil.e("isViewCoverRange 显示的view大小" + (mRect.right - mRect.left) * (mRect.bottom - mRect.top));
+        //percent:有效曝光比例
+        float percent = ((float) validRange / 100);
+        //view的总面积 * 有效曝光比例 <= view当前显示的面积则为有效曝光
         if (((float) (view.getMeasuredWidth() * view.getMeasuredHeight()) * percent) <= ((mRect.right - mRect.left) * (mRect.bottom - mRect.top))) {
             return true;
         }
@@ -230,7 +212,7 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
 
     private void wrapOnTouch(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-            Object viewInfo ;
+            Object viewInfo;
             Field touchInfo = null;
             try {
                 viewInfo = getListenerInfoField().get(view);
@@ -238,9 +220,6 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
                     touchInfo = viewInfo.getClass().getDeclaredField("mOnTouchListener");
                     touchInfo.setAccessible(true);
                 }
-//                if (!touchInfo.isAccessible()) {
-//                    touchInfo.setAccessible(true);
-//                }
                 wrapOnTouch(viewInfo, touchInfo, view);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -314,10 +293,11 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
             if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 //HBHStatistical.getInstance().reportDelayed();
                 HBHStatistical.getInstance().scrollDelayed();
-                LogUtil.e("onTouch:ACTION_UP:"+event.getAction());
-            }else if(event.getAction() == MotionEvent.ACTION_MOVE){
+                LogUtil.e("onTouch MotionEvent:" + (event.getAction() == MotionEvent.ACTION_UP ? "ACTION_UP" : "ACTION_CANCEL"));
+
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 HBHStatistical.getInstance().cancel();
-                LogUtil.e("onTouch:ACTION_MOVE:"+event.getAction());
+                LogUtil.e("onTouch MotionEvent:" + "ACTION_MOVE");
             }
             return false;
         }

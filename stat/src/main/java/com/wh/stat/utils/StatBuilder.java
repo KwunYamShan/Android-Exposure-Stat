@@ -1,6 +1,7 @@
 package com.wh.stat.utils;
 
 import android.content.Context;
+import android.support.annotation.IntRange;
 
 import com.wh.stat.HBHStatistical;
 
@@ -64,20 +65,20 @@ public class StatBuilder {
     }
 
     /**
-     * 设置需曝光的view可被遮挡范围
+     * 设置有效曝光视图显示的范围
      *
-     * @param range 范围：0-100  例：20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光。默认值：0 表示view不可被覆盖
+     * @param range 范围：0-100  例：范围：0-100  例：80代表该视图显示自身总面积的80%以上都可以算作是有效曝光的视图。默认值：100 表示显示完整的view才会被曝光
      */
-    public StatBuilder setCoverRange(int range) {
-        mConfig.setCoverRange(range);
+    public StatBuilder setValidRange(@IntRange(from = 0, to = 100)int range) {
+        mConfig.setValidRange(range);
         return this;
     }
 
     /**
      * 设置是否需要自动曝光
-     * （自动曝光：打开了页面但用户未执行其他任何操作情况下会自动执行一次延时曝光任务）
+     * （自动曝光：第一次打开或者重新进入该页面但用户未执行其他任何操作情况下会自动执行一次曝光任务）
      *
-     * @param isAuto isAuto为true时自动延时曝光。 isAuto为false表示当有用户操作时才会执行延时曝光
+     * @param isAuto isAuto为true时自动曝光。 isAuto为false表示当有用户操作时才会执行曝光
      */
     public StatBuilder setAutoStat(boolean isAuto) {
         mConfig.setAuto(isAuto);
@@ -87,7 +88,7 @@ public class StatBuilder {
     /**
      * 曝光去重（是否可以重复曝光）
      *
-     * @param isRepeat isRepeat为true时表示每当有用户操作后都会执行延时曝光的命令。isRepeat为false表示曝光过一次后在view所在的Activity生命周期结束之前不会被再次曝光
+     * @param isRepeat isRepeat为true时表示每当有用户操作后都会执行曝光的命令。isRepeat为false表示曝光过一次后在view所在的Activity生命周期结束之前不会被再次曝光
      */
     public StatBuilder setRepeat(boolean isRepeat) {
         mConfig.setRepeat(isRepeat);

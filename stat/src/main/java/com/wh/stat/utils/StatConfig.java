@@ -2,6 +2,7 @@ package com.wh.stat.utils;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.support.annotation.IntRange;
 
 import com.wh.stat.R;
 
@@ -22,8 +23,8 @@ public class StatConfig {
     private Rect mScreenRect;
     //用来标记需要曝光的view
     private int tagId;
-    //view可被覆盖的范围，0-100
-    private int coverRange;
+    //有效曝光视图显示的范围，0-100
+    private int validRange = 100;
     //曝光延时的时间
     private long delayTime = 5000;
     //模式
@@ -57,12 +58,12 @@ public class StatConfig {
         this.tagId = tagId;
     }
 
-    public int getCoverRange() {
-        return coverRange;
+    public int getValidRange() {
+        return validRange;
     }
 
-    public void setCoverRange(int coverRange) {
-        this.coverRange = coverRange;
+    public void setValidRange(@IntRange(from = 0, to = 100)int validRange) {
+        this.validRange = validRange;
     }
 
     public long getDelayTime() {

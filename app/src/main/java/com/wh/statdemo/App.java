@@ -29,8 +29,8 @@ public class App extends Application implements IContext {
                 .setTagId(ReportUtil.getInstance().getMarkTag())
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
                 .setDuration(5000)
-                //设置可被覆盖的范围，范围：0-100  20代表view被覆盖或显示不全20%以内依然可以算作是有效曝光的view
-                .setCoverRange(20)
+                //设置有效曝光视图显示的范围，范围：0-100  例：80代表该视图显示自身总面积的80%以上都可以算作是有效曝光的视图
+                .setValidRange(80)
                 //设置是否为线上版本，目前的区别就是是否需要打日志
                 .setDebugModle(true)
                 //是否需要自动执行曝光任务
