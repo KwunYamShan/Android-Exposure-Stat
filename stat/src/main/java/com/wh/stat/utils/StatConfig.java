@@ -35,7 +35,7 @@ public class StatConfig {
     //是否需要重复上报
     private boolean isRepeat;
     //要曝光的activity
-    private List<String> exposureActivity;
+    private List<String> exposureActivities;
 
     public Context getContext() {
         return context;
@@ -101,11 +101,11 @@ public class StatConfig {
         isRepeat = repeat;
     }
 
-    public List<String> getExposureActivity() {
-        return exposureActivity;
+    public List<String> getExposureActivities() {
+        return exposureActivities;
     }
 
-    public void setExposureActivity(List<String> exposureActivity) {
-        this.exposureActivity = exposureActivity;
+    public void setExposureActivities(List<String> exposureActivities) {
+        this.exposureActivities = exposureActivities;
     }
 }

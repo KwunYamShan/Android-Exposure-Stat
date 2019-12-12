@@ -23,8 +23,8 @@ public class StatBuilder {
     /**
      * describe 设置要曝光的activity，不设置默认全部曝光.
      */
-    public StatBuilder setExposureActivity(List<String> list) {
-        mConfig.setExposureActivity(list);
+    public StatBuilder setExposureActivities(List<String> list) {
+        mConfig.setExposureActivities(list);
         return this;
     }
 

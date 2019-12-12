@@ -66,11 +66,6 @@ public class HBHStatistical {
         if (mConfig.getScreenRect() == null) {
             mConfig.setScreenRect(new Rect(0, 0, metrics.widthPixels, metrics.heightPixels));
         }
-        //初始化曝光的activity
-        List<String> exposureActivity = mConfig.getExposureActivity();
-      if (exposureActivity != null && !exposureActivity.isEmpty()) {
-        LayoutManager.setExposureActivityList(exposureActivity);
-      }
     }
 
     public int getTagId() {
@@ -91,7 +86,7 @@ public class HBHStatistical {
      * @param activity
      */
     public void bind(Activity activity) {
-        if (isBind(activity)) {
+        if (!isNeedExpoActivity(activity)) {
             return;
         }
         mRootView = activity.getWindow().getDecorView().getRootView();
@@ -203,20 +198,20 @@ public class HBHStatistical {
     }
 
     /**
-     * 是否绑定这个activity
-     * true:不绑定
-     * false：绑定
+     * 判断该activity是否需要曝光统计
      */
-    private boolean isBind(Activity activity) {
-        List<String> exposureActivity = mConfig.getExposureActivity();
-        if (exposureActivity != null && !exposureActivity.isEmpty()) {
+    public boolean isNeedExpoActivity(Activity activity){
+        List<String> list = mConfig.getExposureActivities();
+        if (list != null && !list.isEmpty()) {
             String canonicalName = activity.getClass().getCanonicalName();
-            if (canonicalName != null && !exposureActivity
+            if (canonicalName != null && list
                 .contains(canonicalName)) {
                 return true;
+            }else{
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**

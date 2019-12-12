@@ -41,7 +41,7 @@ public class App extends Application implements IContext {
                 //是否可以被重复曝光
                 .setRepeat(true)
                 //设置只统计集合中activity的view，不设置默认统计全部页面的view
-                .setExposureActivity(list)
+                .setExposureActivities(list)
                 //返回已曝光的view集合
                 .setViewResultListener(new HBHStatistical.ViewResultListener() {
                     @Override

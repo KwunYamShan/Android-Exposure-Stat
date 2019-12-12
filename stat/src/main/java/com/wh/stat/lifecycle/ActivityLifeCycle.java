@@ -33,7 +33,7 @@ public class ActivityLifeCycle implements Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityPaused(Activity activity) {
-
+        HBHStatistical.getInstance().cancel();
     }
 
     @Override
