@@ -28,7 +28,6 @@ public class App extends Application implements IContext {
       list.add("com.wh.statdemo.TestActivity");
         //Application中初始化，Application需要实现IContext
         new StatBuilder(this)
-            .setExposureActivity(list)//设置只统计list中的activity，不设置默认全部
                 //对每个需要曝光统计的View以setTag的方式进行标识，标识需自行定义
                 .setTagId(ReportUtil.getInstance().getMarkTag())
                 //设置时长:view显示在页面中x毫秒后算一次有效曝光
@@ -41,6 +40,8 @@ public class App extends Application implements IContext {
                 .setAutoStat(true)
                 //是否可以被重复曝光
                 .setRepeat(true)
+                //设置只统计集合中activity的view，不设置默认统计全部页面的view
+                .setExposureActivity(list)
                 //返回已曝光的view集合
                 .setViewResultListener(new HBHStatistical.ViewResultListener() {
                     @Override
