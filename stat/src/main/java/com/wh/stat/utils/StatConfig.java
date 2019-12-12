@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.support.annotation.IntRange;
 
 import com.wh.stat.R;
+import java.util.List;
 
 /**
  * @author KwunYamShan.
@@ -33,6 +34,8 @@ public class StatConfig {
     private boolean isAuto;
     //是否需要重复上报
     private boolean isRepeat;
+    //要曝光的activity
+    private List<String> exposureActivity;
 
     public Context getContext() {
         return context;
@@ -96,5 +99,13 @@ public class StatConfig {
 
     public void setRepeat(boolean repeat) {
         isRepeat = repeat;
+    }
+
+    public List<String> getExposureActivity() {
+        return exposureActivity;
+    }
+
+    public void setExposureActivity(List<String> exposureActivity) {
+        this.exposureActivity = exposureActivity;
     }
 }

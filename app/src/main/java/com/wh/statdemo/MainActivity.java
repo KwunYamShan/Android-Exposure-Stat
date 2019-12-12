@@ -1,8 +1,11 @@
 package com.wh.statdemo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,13 @@ public class MainActivity extends AppCompatActivity {
         TextView tvPrice = findViewById(R.id.tv_price);
         TextView tvBlock = findViewById(R.id.tv_block);
         TextView tvItem = findViewById(R.id.tv_item);
+        Button btn = findViewById(R.id.btn);
+        btn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,TestActivity.class));
+            }
+        });
 
         //埋点
         ReportUtil.getInstance().setReportData(tvHello, "3000块", "婚纱照", "BJ旅拍");

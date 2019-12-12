@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
+import com.wh.stat.layout.LayoutManager;
 import com.wh.stat.layout.StatLayout;
 import com.wh.stat.lifecycle.ActivityLifeCycle;
 import com.wh.stat.lifecycle.IContext;
@@ -19,6 +20,7 @@ import com.wh.stat.utils.StatConfig;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -64,6 +66,11 @@ public class HBHStatistical {
         if (mConfig.getScreenRect() == null) {
             mConfig.setScreenRect(new Rect(0, 0, metrics.widthPixels, metrics.heightPixels));
         }
+        //初始化曝光的activity
+        List<String> exposureActivity = mConfig.getExposureActivity();
+      if (exposureActivity != null && !exposureActivity.isEmpty()) {
+        LayoutManager.setExposureActivityList(exposureActivity);
+      }
     }
 
     public int getTagId() {
@@ -84,6 +91,9 @@ public class HBHStatistical {
      * @param activity
      */
     public void bind(Activity activity) {
+        if (isBind(activity)) {
+            return;
+        }
         mRootView = activity.getWindow().getDecorView().getRootView();
         if (mConfig.isAuto()) {
             /**
@@ -190,6 +200,23 @@ public class HBHStatistical {
 //                return false;
 //            }
 //        });
+    }
+
+    /**
+     * 是否绑定这个activity
+     * true:不绑定
+     * false：绑定
+     */
+    private boolean isBind(Activity activity) {
+        List<String> exposureActivity = mConfig.getExposureActivity();
+        if (exposureActivity != null && !exposureActivity.isEmpty()) {
+            String canonicalName = activity.getClass().getCanonicalName();
+            if (canonicalName != null && !exposureActivity
+                .contains(canonicalName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

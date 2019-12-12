@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.IntRange;
 
 import com.wh.stat.HBHStatistical;
+import java.util.List;
 
 /**
  * @author KwunYamShan.
@@ -17,6 +18,14 @@ public class StatBuilder {
     public StatBuilder(Context context) {
         mConfig = new StatConfig();
         mConfig.setContext(context);
+    }
+
+    /**
+     * describe 设置要曝光的activity，不设置默认全部曝光.
+     */
+    public StatBuilder setExposureActivity(List<String> list) {
+        mConfig.setExposureActivity(list);
+        return this;
     }
 
     /**
