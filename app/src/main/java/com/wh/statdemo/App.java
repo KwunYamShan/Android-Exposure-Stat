@@ -26,6 +26,7 @@ public class App extends Application implements IContext {
         super.onCreate();
       List<String> list = new ArrayList<>();
       list.add("com.wh.statdemo.TestActivity");
+      list.add("com.wh.statdemo.MainActivity");
         //Application中初始化，Application需要实现IContext
         new StatBuilder(this)
                 //对每个需要曝光统计的View以setTag的方式进行标识，标识需自行定义

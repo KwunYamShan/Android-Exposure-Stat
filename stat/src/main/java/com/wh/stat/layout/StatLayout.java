@@ -287,9 +287,6 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            if (source != null) {
-                source.onTouch(v, event);
-            }
             if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 //HBHStatistical.getInstance().reportDelayed();
                 HBHStatistical.getInstance().scrollDelayed();
@@ -298,6 +295,9 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
             } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
                 HBHStatistical.getInstance().cancel();
                 LogUtil.e("onTouch MotionEvent:" + "ACTION_MOVE");
+            }
+            if (source != null) {
+                return source.onTouch(v, event);
             }
             return false;
         }
