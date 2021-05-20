@@ -2,15 +2,13 @@
 
 buildscript {
     repositories {
-        maven{url BINTRAY_URL}
         google()
         jcenter()
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        //gradle版本与相应插件版本的对应关系 3.4.0+ - 5.1.1+
-        classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath 'com.novoda:bintray-release:0.9.1'
+        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 
@@ -18,7 +16,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven{url BINTRAY_URL}
         maven { url "https://jitpack.io" }
     }
 
