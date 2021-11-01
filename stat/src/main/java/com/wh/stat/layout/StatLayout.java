@@ -251,19 +251,13 @@ public class StatLayout extends FrameLayout implements View.OnTouchListener {
                     // 如果source不是TouchWrapper，则首先尝试复用原先已有的TouchWrapper（可能在RecyclerView中对View重新设置了OnTouchListener，
                     // 但是其TouchWrapper对象还在）
                     Object wrapper = view.getTag(R.id.android_touch_listener);
-                    if (wrapper instanceof TouchWrapper) {
-                        // 如果原先已存在TouchWrapper
-                        // 则对比原先TouchWrapper中的OnTouchListener是否与source为同一个实例
-                        if (((TouchWrapper) wrapper).source != source) {
-                            ((TouchWrapper) wrapper).source = source;
-                        }
-                    } else {
+                    if (!(wrapper instanceof TouchWrapper)) {
                         // 如果原先不存在TouchWrapper，则创建TouchWrapper
                         wrapper = new TouchWrapper(source);
                         view.setTag(R.id.android_touch_listener, wrapper);
+                        touchInfo.setAccessible(true);
+                        touchInfo.set(viewInfo, wrapper);
                     }
-                    touchInfo.setAccessible(true);
-                    touchInfo.set(viewInfo, wrapper);
                 }
             } else {
                 view.setOnTouchListener(this);
